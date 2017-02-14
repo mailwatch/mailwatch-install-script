@@ -1,6 +1,7 @@
 #!/bin/bash
 # Configuration script for mailwatch with postfix
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+Webuser="$1"
 
 service postfix stop
 

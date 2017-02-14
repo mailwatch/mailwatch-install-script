@@ -144,7 +144,8 @@ fi
 
 #copy web files
 logprint "Moving MailWatch web files to new folder and setting permissions"
-mv "$InstallFilesFolder/mailscanner/" $WebFolder
+mkdir -p $WebFolder
+cp -r "$InstallFilesFolder"/mailscanner/* $WebFolder
 chown root:mtagroup $WebFolder/images
 chmod ug+rwx $WebFolder/images
 chown root:mtagroup $WebFolder/images/cache
@@ -241,7 +242,7 @@ sed -i -e "s/^define('DB_HOST', '.*')/define('DB_HOST', '$SqlHost')/" $WebFolder
 sed -i -e "s/^define('DB_NAME', '.*')/define('DB_NAME', '$SqlDb')/" $WebFolder/conf.php
 
 #apply adjustments for MTAs
-PS3='Which MTA do you want to use with MailWatch?: (it should already be installed):'
+PS3='Which MTA do you want to use with MailWatch? (it should already be installed):'
 options=("sendmail" "postfix" "exim" "skip")
 select opt in "${options[@]}"
 do
