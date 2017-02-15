@@ -288,21 +288,21 @@ do
 done
 
 logprint "Adjusting perl files"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
 
 logprint "Copying perl files to MailScanner"
-cp "$MailWatchTmpFolder"/MailScanner_perl_scripts/* /etc/MailScanner/custom/
+cp "$MailWatchTmpDir"/MailScanner_perl_scripts/* /etc/MailScanner/custom/
 
 logprint "Restart mailscanner service"
 service mailscanner restart
