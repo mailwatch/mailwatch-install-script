@@ -25,10 +25,12 @@ mkdir -p /etc/exim4/conf.d/main/
 cp -f "$DIR/etc/default/exim4" /etc/default/exim4
 cp  -f "$DIR"/etc/exim4/mailscanner_acldefs /etc/exim4/.
 cp  -f "$DIR"/etc/exim4/hubbed_hosts /etc/exim4/.
-cp  -f "$DIR"/etc/exim4/update-exim4.conf.conf /etc/exim4/.
 cp  -f "$DIR"/etc/exim4/relay_domains /etc/exim4/.
 cp  -f "$DIR"/etc/exim4/conf.d/main/00_mailscanner_listmacrosdefs /etc/exim4/conf.d/main/.
 cp  -f "$DIR"/etc/exim4/conf.d/main/01_mailscanner_config /etc/exim4/conf.d/main/.
+if [ ! -f /etc/exim4/update-exim4.conf.conf ]; then
+    cp -f "$DIR"/etc/exim4/update-exim4.conf.conf /etc/exim4/.
+fi
 /usr/sbin/update-exim4.conf
 cp "$DIR/etc/MailScanner/conf.d/mailwatch.conf" /etc/MailScanner/conf.d/mailwatch.conf
 
