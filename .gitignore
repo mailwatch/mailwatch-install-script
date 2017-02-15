@@ -7,3 +7,6 @@
 #development files
 /_msconfig/
 /vendor/
+
+#mailscanner install log
+mailscanner-install.log
