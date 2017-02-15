@@ -2,6 +2,13 @@
 # Bash Menu Script Example
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 MailScannerVersion="5.0.3-7"
+MailWatchVersion="develop"
+
+TmpDir="/tmp/mailwatchinstall/"
+MailScannerTmpDir="$TmpDir/mailscanner/"
+MailWatchTmpDir="$TmpDir/mailwatch/"
+
+EndNotice=""
 
 if cat /etc/*release | grep ^NAME | grep CentOS; then
     OS="CentOS"
@@ -28,9 +35,6 @@ else
     exit 1;
 fi
 
-EndNotice=""
-
-
 function logprint {
     echo "$1"
     echo "$1" >> /root/mailwatchInstall.log
@@ -39,19 +43,27 @@ logprint "Clearing temp dir"
 rm -rf /tmp/mailwatchinstall/*
 
 if ! ( type "wget" > /dev/null 2>&1 ) ; then
+    logprint "Installing wget"
     $PM install wget
 fi
+if ! ( type "git" > /dev/null 2>&1 ) ; then
+    logprint "Installing git"
+    $PM install git
+fi
+
+logprint "Downloading MailWatch version $MailWatchVersion"
+git clone -b "$MailWatchVersion" --single-branch https://github.com/mailwatch/1.2.0.git /tmp/mailwatchinstall/mailwatch/
 
 read -p "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
 if [ -z $installMailScanner ] || [ "$installMailScanner" == "y" ]; then
     logprint "Starting MailScanner install"
     mkdir -p /tmp/mailwatchinstall/mailscanner
     logprint "Downloading current MailScanner release $MailScannerVersion:"
-    wget -O /tmp/mailwatchinstall/mailscanner/MailScanner.deb.tar.gz  "$MailScannerDownloadPath"
+    wget -O "$MailScannerTmpDir/MailScanner.deb.tar.gz"  "$MailScannerDownloadPath"
     logprint "Extracting mailscanner files:"
-    tar -xzf /tmp/mailwatchinstall/mailscanner/MailScanner.deb.tar.gz -C /tmp/mailwatchinstall/mailscanner/
+    tar -xzf "$MailScannerTmpDir/MailScanner.deb.tar.gz" -C "$MailScannerTmpDir/"
     logprint "Starting MailScanner install script"
-    /tmp/mailwatchinstall/mailscanner/MailScanner-$MailScannerVersion/install.sh
+    "$MailScannerTmpDir/MailScanner-$MailScannerVersion/install.sh"
     logprint "MailScanner install finished."
     EndNotice="$EndNotice \n * Adjust /etc/MailScanner.conf to your needs \n * Set run_mailscanner=1 in /etc/MailScanner/defaults"
     sleep 1
@@ -129,7 +141,7 @@ if [ "$mysqlInstalled" == "1" ]; then
         SqlRoot="root"
     fi
     logprint "Creating sql database and setting permission. You now need to enter the password of the root sql user twice"
-    mysql -u $SqlRoot -p < "$InstallFilesFolder/create.sql"
+    mysql -u $SqlRoot -p < "$MailWatchTmpDir/create.sql"
     mysql -u $SqlRoot -p --execute="GRANT ALL ON $SqlDb.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
 
     read -p "Enter an admin user for the MailWatch web interface: " MWAdmin
@@ -145,7 +157,7 @@ fi
 #copy web files
 logprint "Moving MailWatch web files to new folder and setting permissions"
 mkdir -p $WebFolder
-cp -r "$InstallFilesFolder"/mailscanner/* $WebFolder
+cp -r "$MailWatchTmpDir"/mailscanner/* $WebFolder
 chown root:mtagroup $WebFolder/images
 chmod ug+rwx $WebFolder/images
 chown root:mtagroup $WebFolder/images/cache
@@ -276,21 +288,21 @@ do
 done
 
 logprint "Adjusting perl files"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/" "$InstallFilesFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$InstallFilesFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$InstallFilesFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/" "$InstallFilesFolder/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/" "$InstallFilesFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpFolder/MailScanner_perl_scripts/MailWatch.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLSpamSettings.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpFolder/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
 
 logprint "Copying perl files to MailScanner"
-cp "$InstallFilesFolder"/MailScanner_perl_scripts/* /etc/MailScanner/custom/
+cp "$MailWatchTmpFolder"/MailScanner_perl_scripts/* /etc/MailScanner/custom/
 
 logprint "Restart mailscanner service"
 service mailscanner restart
