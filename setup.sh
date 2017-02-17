@@ -46,13 +46,12 @@ if ! ( type "wget" > /dev/null 2>&1 ) ; then
     logprint "Installing wget"
     $PM install wget
 fi
-if ! ( type "git" > /dev/null 2>&1 ) ; then
-    logprint "Installing git"
-    $PM install git
-fi
 
+mkdir -p "$MailWatchTmpDir"
 logprint "Downloading MailWatch version $MailWatchVersion"
-git clone -b "$MailWatchVersion" --single-branch https://github.com/mailwatch/1.2.0.git /tmp/mailwatchinstall/mailwatch/
+wget -O "$MailWatchTmpDir/MW.tar.gz" "https://github.com/mailwatch/1.2.0/archive/$MailWatchVersion.tar.gz"
+logprint "Extracting MailWatch files"
+tar -xf "$MailWatchTmpDir/MW.tar.gz" -C "$MailWatchTmpDir"
 
 read -p "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
 if [ -z $installMailScanner ] || [ "$installMailScanner" == "y" ]; then
