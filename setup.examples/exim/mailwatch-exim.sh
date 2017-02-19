@@ -21,20 +21,21 @@ fi
 
 service "$Service" stop
 
-// Install "minimum" Exim version (Debian - Ubuntu)
-if [ ! -d /etc/exim4/conf.d/main/ ]; then
-    mkdir -p /etc/exim4/conf.d/main/
+if [ "$OS" == "Debian" ] || [ "$OS" == "Ubuntu" ]; then
+	// Install "minimum" Exim version (Debian - Ubuntu)
+	cp -f "$DIR/etc/default/exim4" /etc/default/exim4
+	cp  -f "$DIR"/etc/exim4/conf.d/main/01_mailscanner_config /etc/exim4/conf.d/main/.
+	// Install "full" Exim version
+	//cp  -f "$DIR"/etc/exim4/conf.d/main/00_mailscanner_listmacrosdefs /etc/exim4/conf.d/main/.
+	//cp  -f "$DIR"/etc/exim4/mailscanner_acldefs /etc/exim4/.
+	//cp  -f "$DIR"/etc/exim4/hubbed_hosts /etc/exim4/.
+	//cp  -f "$DIR"/etc/exim4/relay_domains /etc/exim4/.
+	//cp -f "$DIR"/etc/exim4/update-exim4.conf.conf /etc/exim4/.
+	///usr/sbin/update-exim4.conf
+else
+	// Install for RedHat
+	// Todo
 fi
-cp -f "$DIR/etc/default/exim4" /etc/default/exim4
-cp  -f "$DIR"/etc/exim4/conf.d/main/01_mailscanner_config /etc/exim4/conf.d/main/.
-
-// Install "full" Exim version
-//cp  -f "$DIR"/etc/exim4/conf.d/main/00_mailscanner_listmacrosdefs /etc/exim4/conf.d/main/.
-//cp  -f "$DIR"/etc/exim4/mailscanner_acldefs /etc/exim4/.
-//cp  -f "$DIR"/etc/exim4/hubbed_hosts /etc/exim4/.
-//cp  -f "$DIR"/etc/exim4/relay_domains /etc/exim4/.
-//cp -f "$DIR"/etc/exim4/update-exim4.conf.conf /etc/exim4/.
-///usr/sbin/update-exim4.conf
 
 // Copy MailScanner configuration
 cp "$DIR/etc/MailScanner/conf.d/mailwatch.conf" /etc/MailScanner/conf.d/mailwatch.conf
