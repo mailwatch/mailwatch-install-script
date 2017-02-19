@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to apply adjustments for exim
+# Script to apply adjustments for Exim
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 Webuser="$1"
 OS="$2"
@@ -21,19 +21,25 @@ fi
 
 service "$Service" stop
 
-mkdir -p /etc/exim4/conf.d/main/
-cp -f "$DIR/etc/default/exim4" /etc/default/exim4
-cp  -f "$DIR"/etc/exim4/mailscanner_acldefs /etc/exim4/.
-cp  -f "$DIR"/etc/exim4/hubbed_hosts /etc/exim4/.
-cp  -f "$DIR"/etc/exim4/relay_domains /etc/exim4/.
-cp  -f "$DIR"/etc/exim4/conf.d/main/00_mailscanner_listmacrosdefs /etc/exim4/conf.d/main/.
-cp  -f "$DIR"/etc/exim4/conf.d/main/01_mailscanner_config /etc/exim4/conf.d/main/.
-if [ ! -f /etc/exim4/update-exim4.conf.conf ]; then
-    cp -f "$DIR"/etc/exim4/update-exim4.conf.conf /etc/exim4/.
+// Install "minimum" Exim version (Debian - Ubuntu)
+if [ ! -d /etc/exim4/conf.d/main/ ]; then
+    mkdir -p /etc/exim4/conf.d/main/
 fi
-/usr/sbin/update-exim4.conf
+cp -f "$DIR/etc/default/exim4" /etc/default/exim4
+cp  -f "$DIR"/etc/exim4/conf.d/main/01_mailscanner_config /etc/exim4/conf.d/main/.
+
+// Install "full" Exim version
+//cp  -f "$DIR"/etc/exim4/conf.d/main/00_mailscanner_listmacrosdefs /etc/exim4/conf.d/main/.
+//cp  -f "$DIR"/etc/exim4/mailscanner_acldefs /etc/exim4/.
+//cp  -f "$DIR"/etc/exim4/hubbed_hosts /etc/exim4/.
+//cp  -f "$DIR"/etc/exim4/relay_domains /etc/exim4/.
+//cp -f "$DIR"/etc/exim4/update-exim4.conf.conf /etc/exim4/.
+///usr/sbin/update-exim4.conf
+
+// Copy MailScanner configuration
 cp "$DIR/etc/MailScanner/conf.d/mailwatch.conf" /etc/MailScanner/conf.d/mailwatch.conf
 
+// Adjust rights for Exim
 usermod -a -G "$EximGroup" clamav
 usermod -a -G mtagroup clamav
 usermod -a -G mtagroup "$EximUser"
@@ -74,9 +80,9 @@ mkdir /var/spool/exim4_outgoing/msglog
 chown "$EximUser":"$EximGroup" /var/spool/exim4_outgoing/msglog
 chmod 750 /var/spool/exim4_outgoing/msglog
 
-# save currrent crontabs
+# Save currrent crontabs
 crontab -l > /tmp/crontab.current
-# add exim crons
+# Add Exim crons
 cat >> /tmp/crontab.current << EOF
 # For Exim4 ingoing
 0 6 * * * /usr/sbin/exim_tidydb -t 1d /var/spool/exim4 callout > /dev/null 2>&1
@@ -84,7 +90,7 @@ cat >> /tmp/crontab.current << EOF
 0 6 * * * /usr/sbin/exim_tidydb -t 1d /var/spool/exim4_outgoing retry > /dev/null 2>&1
 0 6 * * * /usr/sbin/exim_tidydb -t 1d /var/spool/exim4_outgoing wait-remote_smtp > /dev/null 2>&1
 EOF
-# import the update cron
+# Import the updated cron
 crontab /tmp/crontab.current
 rm /tmp/crontab.current
 
