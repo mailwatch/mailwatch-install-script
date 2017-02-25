@@ -10,8 +10,8 @@ if [ "$OS" == "Debian" ] || [ "$OS" == "Ubuntu" ]; then
     SpoolDir="/var/spool/exim4"
 else
     if [ "$OS" == "RedHat" ]; then
-        sed -i -e "s/Debian-exim/exim/" "$DIR/etc/MailScanner/conf.d/mailwatch.conf"
-        sed -i -e "s~/usr/sbin/exim4~/usr/sbin/exim~" "$DIR/etc/MailScanner/conf.d/mailwatch.conf"
+        sed -i -e "s/Debian-exim/exim/" "$DIR/etc/MailScanner/conf.d/00_mailwatch.conf"
+        sed -i -e "s~/usr/sbin/exim4~/usr/sbin/exim~" "$DIR/etc/MailScanner/conf.d/00_mailwatch.conf"
     fi
     EximUser="exim"
     EximGroup="exim"
@@ -38,7 +38,7 @@ else
 fi
 
 // Copy MailScanner configuration
-cp "$DIR/etc/MailScanner/conf.d/mailwatch.conf" /etc/MailScanner/conf.d/mailwatch.conf
+cp "$DIR/etc/MailScanner/conf.d/00_mailwatch.conf" /etc/MailScanner/conf.d/00_mailwatch.conf
 
 // Adjust rights for Exim
 usermod -a -G "$EximGroup" clamav
