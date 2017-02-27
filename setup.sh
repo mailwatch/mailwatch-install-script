@@ -5,8 +5,10 @@ MailScannerVersion="5.0.3-7"
 
 TmpDir="/tmp/mailwatchinstall"
 MailScannerTmpDir="$TmpDir/mailscanner/"
-MailWatchVersion="v1.2.0-rc.4"
-MailWatchTmpDir="$TmpDir/mailwatch/1.2.0-1.2.0-rc.4"
+#MailWatchVersion="v1.2.0-rc.4"
+#MailWatchTmpDir="$TmpDir/mailwatch/1.2.0-1.2.0-rc.4"
+MailWatchVersion="develop"
+MailWatchTmpDir="$TmpDir/mailwatch/1.2.0-develop"
 IsUpgrade=0
 
 EndNotice=""
@@ -187,7 +189,7 @@ else
 fi
 
 if [ "$IsUpgrade" == 1 ]; then
-    logprint "Not creating sql db because we are running an upgrade""
+    logprint "Not creating sql db because we are running an upgrade"
 elif [ "$mysqlInstalled" == "1" ]; then
     read -p "Root sql user (with rights to create db)[root]:" SqlRoot
     if [ -z $SqlRoot ]; then
@@ -338,21 +340,13 @@ do
 done
 
 logprint "Adjusting perl files"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch.pm"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/SQLSpamSettings.pm"
-sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
-sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/SQLBlackWhiteList.pm"
+sed -i -e "s/my (\$db_name) = '.*'/my (\$db_name) = '$SqlDb'/"   "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch-DB.pm"
+sed -i -e "s/my (\$db_host) = '.*'/my (\$db_host) = '$SqlHost'/" "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch-DB.pm"
+sed -i -e "s/my (\$db_user) = '.*'/my (\$db_user) = '$SqlUser'/" "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch-DB.pm"
+sed -i -e "s/my (\$db_pass) = '.*'/my (\$db_pass) = '$SqlPwd'/"  "$MailWatchTmpDir/MailScanner_perl_scripts/MailWatch-DB.pm"
 
 logprint "Copying perl files to MailScanner"
-cp "$MailWatchTmpDir"/MailScanner_perl_scripts/* /etc/MailScanner/custom/
+cp "$MailWatchTmpDir"/MailScanner_perl_scripts/*.pm /etc/MailScanner/custom/
 
 logprint "Restart mailscanner service"
 service mailscanner restart
