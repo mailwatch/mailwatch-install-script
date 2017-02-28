@@ -23,7 +23,7 @@ chown -R postfix:postfix /var/spool/MailScanner/quarantine
 chown    postfix:postfix /var/spool/postfix
 chown -R postfix:mtagroup /var/spool/postfix/{incoming,hold}
 chmod -R g+r /var/spool/postfix/{hold,incoming}
-chown -R postfix:postfix /var/spool/postfix/{active,bounce,flush,maildrop,pid}
+chown -R postfix:postfix /var/spool/postfix/{active,bounce,flush}
 
 # restart again to notice new permissions
 service postfix start
