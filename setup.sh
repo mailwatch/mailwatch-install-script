@@ -10,10 +10,18 @@ MailWatchTmpDir="$TmpDir/mailwatch/"
 
 EndNotice=""
 
-if cat /etc/*release | grep ^NAME | grep CentOS; then
+if cat /etc/*release | grep CentOS; then
     OS="CentOS"
     PM="yum"
     MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
+    #find OS version
+    if cat /etc/*release | grep 5; then
+        OSVersion="5"
+    elif cat /etc/*release | grep 6; then
+        OSVersion="6"
+    elif cat /etc/*release | grep 7; then
+        OSVersion="7"
+    fi
 elif cat /etc/*release | grep ^NAME | grep Red; then
     OS="RedHat"
     PM="yum"
@@ -123,8 +131,19 @@ if ! ( type "mysqld" > /dev/null 2>&1 ) ; then
     read -p "No mysql server found. Do you want to install mariadb as sql server?(y/n)[y]: " response
     if [ -z $response ] || [ $response == "y" ]; then
         logprint "Start install of mariadb"
-        $PM install mariadb-server mariadb-client
-        mysqlInstalled="1"
+        if [ $OS == "CentOS" ]; then
+            logprint "Adding MariaDB 10.1 Repo"
+            cat yum.repo/$OS-$OSVersion-MariaDB.repo > /etc/yum.repos.d/MariaDB.repo
+            $PM clean all
+            $PM install MariaDB-server MariaDB-client
+            #TODO::Check for other rpm variants
+        else
+            $PM install mariadb-server mariadb-client
+            mysqlInstalled="1"
+        fi
+        logprint "MariaDB installed - now we need to secure the installation"
+        logprint "Please enter the required details in the next step - for security, please enter a password"
+        mysql_secure_installation
     else
         mysqlInstalled="0"
         logprint "Not installing mariadb."
