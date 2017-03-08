@@ -9,21 +9,20 @@ cp "$DIR/etc/MailScanner/conf.d/00_mailwatch.conf" /etc/MailScanner/conf.d/00_ma
 cp "$DIR/etc/postfix/header_checks" /etc/postfix/header_checks
 echo "header_checks = regexp:/etc/postfix/header_checks" >> /etc/postfix/main.cf
 
-# restart required to create hold folder (will create error message because of still missing permissions)
-service postfix start
-sleep 3
-service postfix stop
-
 # "Setting file permissions for use of postfix"
 mkdir -p /var/spool/MailScanner/spamassassin/
 chown -R postfix:mtagroup /var/spool/MailScanner/spamassassin
 chown -R postfix:postfix /var/spool/MailScanner/incoming
 chown -R postfix:postfix /var/spool/MailScanner/quarantine
 
-chown    postfix:postfix /var/spool/postfix
-chown -R postfix:mtagroup /var/spool/postfix/{incoming,hold}
+
+# restart required to create hold folder (will create error message because of still missing permissions but they can be ignored)
+service postfix start
+sleep 3
+service postfix stop
+
+chown -R postfix:"$Webuser" /var/spool/postfix/{incoming,hold}
 chmod -R g+r /var/spool/postfix/{hold,incoming}
-chown -R postfix:postfix /var/spool/postfix/{active,bounce,flush}
 
 # restart again to notice new permissions
 service postfix start
