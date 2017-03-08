@@ -139,15 +139,9 @@ if [ -d $WebFolder ]; then
 fi
 
 #copy web files
-logprint "Moving MailWatch web files to new folder and setting permissions"
+logprint "Moving MailWatch web files to new folder"
 mkdir -p $WebFolder
 cp -r "$MailWatchTmpDir"/mailscanner/* $WebFolder
-chown root:mtagroup $WebFolder/images
-chmod ug+rwx $WebFolder/images
-chown root:mtagroup $WebFolder/images/cache
-chmod ug+rwx $WebFolder/images/cache
-chown root:mtagroup $WebFolder/temp
-chmod g+rw $WebFolder/temp
 
 ############ Ask for sql credentiails ################
 logprint ""
@@ -307,6 +301,15 @@ case $WebServer in
         sleep 1
         ;;
 esac
+
+###############fix web dir permissions#################################
+logprint "Settings permissions for web directory"
+chown root:"$Webuser" $WebFolder/images
+chmod ug+rwx $WebFolder/images
+chown root:"$Webuser" $WebFolder/images/cache
+chmod ug+rwx $WebFolder/images/cache
+chown root:"$Webuser" $WebFolder/temp
+chmod g+rw $WebFolder/temp
 
 ###############apply general MailWatch settings #######################
 logprint "Apply MailWatch settings to conf.php"
