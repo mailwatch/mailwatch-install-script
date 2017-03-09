@@ -13,7 +13,7 @@ daemon_smtp_ports = 25 : 587
 #MAIN_TLS_ENABLE = Yes
 
 # Do a reverse DNS lookup on all incoming IP calls
-MAIN_HOST_LOOKUP = Yes
+MAIN_HOST_LOOKUP = *
 
 # Access list of domains to relay
 # Domains to route are in /etc/exim4/hubbed_hosts 
