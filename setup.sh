@@ -18,11 +18,11 @@ if cat /etc/*release | grep CentOS; then
     PM="yum"
     MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
     #find OS version
-    if cat /etc/*release | grep 5; then
+    if rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 5; then
         OSVersion="5"
-    elif cat /etc/*release | grep 6; then
+    elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 6; then
         OSVersion="6"
-    elif cat /etc/*release | grep 7; then
+    elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 7; then
         OSVersion="7"
     fi
 elif cat /etc/*release | grep ^NAME | grep Red; then
@@ -33,6 +33,14 @@ elif cat /etc/*release | grep ^NAME | grep Fedora; then
     OS="Fedora"
     PM="yum"
     MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
+    #find OS Version
+    if rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 23; then
+        OSVersion="23"
+    elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 24; then
+        OSVersion="24"
+    elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 25; then
+        OSVersion="25"
+    fi
 elif cat /etc/*release | grep -i Debian; then
     OS="Debian"
     PM="apt-get"
@@ -40,6 +48,15 @@ elif cat /etc/*release | grep -i Debian; then
 else
     echo "OS NOT SUPPORTED - Please perform a manual install"
     exit 1;
+fi
+
+#Find Architecture (i686/x86_64)
+if arch | grep 'x86_64' ; then
+    ARCH="64"
+elif arch | grep 'i686' ; then
+    ARCH="32"
+else
+    ARCH="unknown"
 fi
 
 function logprint {
@@ -51,7 +68,12 @@ rm -rf /tmp/mailwatchinstall/*
 
 if ! ( type "wget" > /dev/null 2>&1 ) ; then
     logprint "Install script depends on wget."
-    $PM install wget
+    $PM -y install wget
+fi
+
+if ! ( type "tar" > /dev/null 2>&1 ) ; then
+    logprint "Install script depends on tar."
+       $PM -y install tar
 fi
 
 mkdir -p "$MailWatchTmpDir"
@@ -175,19 +197,27 @@ if ! ( type "mysqld" > /dev/null 2>&1 ) ; then
     read -p "No mysql server found. Do you want to install mariadb as sql server?(y/n)[y]: " response
     if [ -z $response ] || [ $response == "y" ]; then
         logprint "Start install of mariadb"
-        if [ $OS == "CentOS" ]; then
-            logprint "Adding MariaDB 10.1 Repo"
-            cat yum.repo/$OS-$OSVersion-MariaDB.repo > /etc/yum.repos.d/MariaDB.repo
-            $PM clean all
-            $PM install MariaDB-server MariaDB-client
+        if [ $OS == "CentOS" ] || [ $OS == "Fedora" ]; then
+            if [ $OSVersion != "25" ]; then
+                logprint "Adding MariaDB 10.1 Repo"
+                cat yum.repo/$OS-$OSVersion-MariaDB.$ARCH.repo > /etc/yum.repos.d/MariaDB.repo
+                $PM clean all
+            fi
+            $PM install mariadb-server
             #TODO::Check for other rpm variants
         else
             $PM install mariadb-server mariadb-client
-            mysqlInstalled="1"
         fi
-        logprint "MariaDB installed - now we need to secure the installation"
-        logprint "Please enter the required details in the next step - for security, please enter a password"
-        mysql_secure_installation
+        #Check install was successful
+        if ! ( type "mysqld" > /dev/null 2>&1 ) ; then
+            logprint "MariaDB installation failed - You will have to install manually"
+            mysqlInstalled="0"
+        else
+            mysqlInstalled="1"
+            logprint "MariaDB installed - now we need to secure the installation"
+            logprint "Please enter the required details in the next step - for security, please enter a password"
+            mysql_secure_installation
+        fi
     else
         mysqlInstalled="0"
         logprint "Not installing mariadb."
@@ -273,6 +303,7 @@ fi
 # configure webserver
 logprint ""
 case $WebServer in
+#TODO::Check compatibility with RPM version
     "apache")
         logprint "Creating config for apache"
         "$InstallFilesFolder/setup.examples/apache/mailwatch-apache.sh" "$WebFolder"
