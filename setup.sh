@@ -29,18 +29,6 @@ elif cat /etc/*release | grep ^NAME | grep Red; then
     OS="RedHat"
     PM="yum"
     MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
-elif cat /etc/*release | grep ^NAME | grep Fedora; then
-    OS="Fedora"
-    PM="yum"
-    MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
-    #find OS Version
-    if rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 23; then
-        OSVersion="23"
-    elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 24; then
-        OSVersion="24"
-    elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 25; then
-        OSVersion="25"
-    fi
 elif cat /etc/*release | grep -i Debian; then
     OS="Debian"
     PM="apt-get"
@@ -197,13 +185,12 @@ if ! ( type "mysqld" > /dev/null 2>&1 ) ; then
     read -p "No mysql server found. Do you want to install mariadb as sql server?(y/n)[y]: " response
     if [ -z $response ] || [ $response == "y" ]; then
         logprint "Start install of mariadb"
-        if [ $OS == "CentOS" ] || [ $OS == "Fedora" ]; then
-            if [ $OSVersion != "25" ]; then
-                logprint "Adding MariaDB 10.1 Repo"
-                cat yum.repo/$OS-$OSVersion-MariaDB.$ARCH.repo > /etc/yum.repos.d/MariaDB.repo
-                $PM clean all
-            fi
+        if [ $OS == "CentOS" ] ; then
+            logprint "Adding MariaDB 10.1 Repo"
+            cat yum.repo/$OS-$OSVersion-MariaDB.$ARCH.repo > /etc/yum.repos.d/MariaDB.repo
+            $PM clean all
             $PM install mariadb-server
+        fi
             #TODO::Check for other rpm variants
         else
             $PM install mariadb-server mariadb-client
