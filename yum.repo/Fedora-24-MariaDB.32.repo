@@ -1,7 +1,0 @@
-# MariaDB 10.1 Fedora repository list - created 2017-03-19 19:56 UTC
-# http://downloads.mariadb.org/mariadb/repositories/
-[mariadb]
-name = MariaDB
-baseurl = http://yum.mariadb.org/10.1/fedora24-x86
-gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-gpgcheck=1
