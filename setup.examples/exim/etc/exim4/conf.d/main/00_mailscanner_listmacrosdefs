@@ -28,8 +28,11 @@ CHECK_RCPT_LOCAL_ACL_FILE = CONFDIR/mailscanner_acldefs
 # To activate sender callback on remote host (mailhub)
 RECIPIENT_VERIFY_CALLBACK_RELAY = true
 
+# Warn if the sender host does not have valid reverse DNS.
+#CHECK_RCPT_REVERSE_DNS = true
+
 # Deny if the sender host does not have valid reverse DNS.
-CHECK_RCPT_REVERSE_DNS_DENY = true
+#CHECK_RCPT_REVERSE_DNS_DENY = true
 
 # Various Debian's ACL CHECK
 #CHECK_MAIL_HELO_ISSUED = true
