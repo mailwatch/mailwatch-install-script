@@ -33,11 +33,7 @@ elif cat /etc/*release | grep ^NAME | grep Fedora; then
     OS="Fedora"
     PM="yum"
     MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
-elif cat /etc/*release | grep ^NAME | grep Ubuntu; then
-    OS="Ubuntu"
-    PM="apt-get"
-    MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.deb.tar.gz"
-elif cat /etc/*release | grep ^NAME | grep Debian ; then
+elif cat /etc/*release | grep -i Debian; then
     OS="Debian"
     PM="apt-get"
     MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.deb.tar.gz"
@@ -322,9 +318,9 @@ if [ "$IsUpgrade" == 0 ]; then
     sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
 else
     logprint "Upgrading MailWatch conf and db"
-    cp "$TmpDir/mailwatch.conf.php.old" "$WebFolder/conf.php"
+    cp "$TmpDir/mailwatch_conf.php.old" "$WebFolder/conf.php"
     sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
-    "§MailWatchTmpDir/upgrade.php" "$WebFolder/functions.php"
+    "$MailWatchTmpDir/upgrade.php" "$WebFolder/functions.php"
 fi
 
 #####################apply adjustments for MTAs ########################
