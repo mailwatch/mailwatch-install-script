@@ -5,10 +5,10 @@ MailScannerVersion="5.0.3-7"
 
 TmpDir="/tmp/mailwatchinstall"
 MailScannerTmpDir="$TmpDir/mailscanner/"
-#MailWatchVersion="v1.2.0-rc.4"
-#MailWatchTmpDir="$TmpDir/mailwatch/1.2.0-1.2.0-rc.4"
+#MailWatchVersion="v1.2.2"
+#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.2"
 MailWatchVersion="develop"
-MailWatchTmpDir="$TmpDir/mailwatch/1.2.0-develop"
+MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-develop"
 IsUpgrade=0
 
 EndNotice=""
@@ -56,7 +56,7 @@ fi
 
 mkdir -p "$MailWatchTmpDir"
 logprint "Downloading MailWatch version $MailWatchVersion"
-wget -O "$TmpDir/MW.tar.gz" "https://github.com/mailwatch/1.2.0/archive/$MailWatchVersion.tar.gz"
+wget -O "$TmpDir/MW.tar.gz" "https://github.com/mailwatch/MailWatch/archive/$MailWatchVersion.tar.gz"
 logprint "Extracting MailWatch files"
 tar -xf "$TmpDir/MW.tar.gz" -C "$TmpDir/mailwatch"
 # test if mailwatch was successfully downloaded
@@ -242,22 +242,14 @@ else
         logprint "Installing apache"
         if [ $PM == "yum" ]; then
             $PM install httpd
-            Webuser="apache"
         else
             $PM install apache2
-            Webuser="www-data"
         fi
         WebServer="apache"
     elif [ $response == 2 ]; then
         #Nginx
         logprint "Installing nginx"
-        if [ $PM == "yum" ]; then
-            $PM install nginx
-            Webuser="nginx"
-        else
-            $PM install nginx
-            Webuser="www-data"
-        fi
+        $PM install nginx
         WebServer="nginx"
     else
         WebServer="skip"
@@ -284,16 +276,27 @@ case $WebServer in
     "apache")
         logprint "Creating config for apache"
         "$InstallFilesFolder/setup.examples/apache/mailwatch-apache.sh" "$WebFolder"
+        if [ $PM == "yum" ]; then
+            Webuser="nginx"
+        else
+            Webuser="www-data"
+        fi
         sleep 1
         ;;
     "nginx")
        #TODO
+        if [ $PM == "yum" ]; then
+            Webuser="nginx"
+        else
+            Webuser="www-data"
+        fi
         logprint "not available yet"
         sleep 1
         ;;
     "skip")
         logprint "Skipping web server install"
         EndNotice="$EndNotice \n * you need to configure your webserver for directory $WebFolder."
+        read -p "MailWatch needs to assign permissions to the webserver user. What user is your webserver running at?: " Webuser
         sleep 1
         ;;
 esac
