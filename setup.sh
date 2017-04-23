@@ -274,13 +274,17 @@ else
 fi
 
 logprint ""
-read -p "MailWatch requires the php packages php5 php5-gd and php5-mysqlnd. Do you want to install them if missing?(y/n)[y]: " installPhp
+read -p "MailWatch requires the php packages php php-gd and php-mysqlnd. Do you want to install them if missing?(y/n)[y]: " installPhp
 if [ -z $installPhp ] || [ "$installPhp" == "y" ]; then
     logprint "Installing required php packages"
-    # since debian 9 and ubuntu 16 packages are php etc. instead of php5
-    read -d . VERSION < /etc/*_version
-    if [ [ "$OS" == "Debian" ] && [ $VERSION -lt 9 ] ] || [ [ "$OS" == "Ubuntu" ] && [ $VERSION -lt 16 ] ]; then
-        $PM install php5 php5-gd php5-mysqlnd
+    # since debian 9 and ubuntu 16 packages are php php-gd etc. instead of php5.
+    # So we test if the php package is available over apt and if that's not the case we install php5
+    if [ "$OS" == "Debian" ]; then
+        if [ -z $(apt-cache search php | grep "^php ") ] ; then
+            $PM install php5 php5-gd php5-mysqlnd
+        else
+            $PM install php php-gd php-mysql
+        fi
     else
         $PM install php php-gd php-mysqlnd
     fi
