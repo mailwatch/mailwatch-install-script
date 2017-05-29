@@ -1,9 +1,0 @@
-/var/log/exim4_outgoing/mainlog {
-	daily
-	missingok
-	rotate 10
-	compress
-	delaycompress
-	notifempty
-	create 640 Debian-exim adm
-}

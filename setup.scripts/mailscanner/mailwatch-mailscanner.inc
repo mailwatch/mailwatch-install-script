@@ -1,7 +1,7 @@
 #!/bin/bash
 # Bash Menu Script Example
 
-MailScannerTmpDir="DIR/mailscanner/"
+MailScannerTmpDir="$TmpDir/mailscanner/"
 
 function install-mailscanner() {
     logprint ""
