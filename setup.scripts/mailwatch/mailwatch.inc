@@ -55,7 +55,7 @@ function download-mailwatch() {
 function install-mailwatch() {
     ################# Copy MailWatch files and set permissions ##################
     if [ -d $WebFolder ]; then
-        read -p "Folder $WebFolder already exists. Old files except config.php and skin.css will be removed. $
+        read -p "Folder $WebFolder already exists. Old files except config.php and skin.css will be removed.  Do you want to continue?(y/n)[n]: " response
         if [ -z $response ]; then
             logprint "Stopping setup on user request"
             exit
@@ -63,14 +63,14 @@ function install-mailwatch() {
             logprint "Stopping setup on user request"
             exit
         fi
-        read -p "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]" u$
+        read -p "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]" upgrading
         if [ -z $upgrading ] || [ "$upgrading" == "y" ]; then
             if [ -f "$WebFolder/conf.php" ]; then
                 IsUpgrade=1
                 logprint "Saving old MailWatch config.php file"
                 cp "$WebFolder/conf.php" "$TmpDir/mailwatch_conf.php.old"
             else
-                logprint "You wanted to upgrade MailWatch but we couldn't find an old config file. Stopping s$
+                logprint "You wanted to upgrade MailWatch but we couldn't find an old config file. Stopping setup."
                 exit
             fi
             if [ -f "$WebFolder/skin.css" ]; then
@@ -140,11 +140,11 @@ function configure-mailwatch() {
         sed -i -e "s/^define('DB_PASS', '.*')/define('DB_PASS', '$SqlPwd')/" $WebFolder/conf.php
         sed -i -e "s/^define('DB_HOST', '.*')/define('DB_HOST', '$SqlHost')/" $WebFolder/conf.php
         sed -i -e "s/^define('DB_NAME', '.*')/define('DB_NAME', '$SqlDb')/" $WebFolder/conf.php
-        sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/con$
+        sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
    else
        logprint "Upgrading MailWatch conf and db"
        cp "$TmpDir/mailwatch_conf.php.old" "$WebFolder/conf.php"
-       sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/con$
+       sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
        "$MailWatchTmpDir/upgrade.php" "$WebFolder/functions.php"
        if [ -f "$TmpDir/mailwatch_skin.css.old" ]; then
            logprint "Restoring old skin.css file"
