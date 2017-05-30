@@ -108,8 +108,8 @@ case $WebServer in
     "apache")
         logprint "Creating config for apache"
         "$InstallFilesFolder/setup.scripts/apache/mailwatch-apache.sh" "$WebFolder"
-        if [ $PM == "yum" ]; then
-            Webuser="nginx"
+        if [[ "$PM" == "yum"* ]]; then
+            Webuser="apache"
         else
             Webuser="www-data"
         fi
@@ -117,7 +117,7 @@ case $WebServer in
         ;;
     "nginx")
        #TODO
-        if [ $PM == "yum" ]; then
+        if [[ "$PM" == "yum"* ]]; then
             Webuser="nginx"
         else
             Webuser="www-data"
