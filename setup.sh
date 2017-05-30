@@ -12,6 +12,7 @@ IsUpgrade=0
 
 EndNotice=""
 
+source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch-setup-config.inc"
 source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
 source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
 source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
@@ -46,7 +47,7 @@ install-mailscanner
 
 ##ask directory for web files
 logprint ""
-read -p "In what location should MailWatch be installed (web files directory)?[/var/www/html/mailscanner/]:" WebFolder
+ask "In what location should MailWatch be installed (web files directory)?[/var/www/html/mailscanner/]:" WebFolder
 if [ -z $WebFolder ]; then
     WebFolder="/var/www/html/mailscanner/"
 fi
@@ -75,11 +76,11 @@ else
     echo "2 - Nginx"
     echo "n - do not install or configure"
     echo;
-    read -r -p "Select Webserver: " response
-    if [[ $response =~ ^([nN][oO])$ ]]; then
+    ask "Select Webserver: " webserverSelect
+    if [[ $webserverSelect =~ ^([nN][oO])$ ]]; then
         #do not install or configure webserver
         WebServer="skip"
-    elif [ $response == 1 ]; then
+    elif [ $webserverSelect == 1 ]; then
         #Apache
         logprint "Installing apache"
         if [ $PM == "yum" ]; then
@@ -88,7 +89,7 @@ else
             $PM install apache2
         fi
         WebServer="apache"
-    elif [ $response == 2 ]; then
+    elif [ $webserverSelect == 2 ]; then
         #Nginx
         logprint "Installing nginx"
         $PM install nginx
@@ -127,7 +128,7 @@ case $WebServer in
     "skip")
         logprint "Skipping web server install"
         EndNotice="$EndNotice \n * you need to configure your webserver for directory $WebFolder."
-        read -p "MailWatch needs to assign permissions to the webserver user. What user is your webserver running at?: " Webuser
+        ask "MailWatch needs to assign permissions to the webserver user. What user is your webserver running at?: " Webuser
         sleep 1
         ;;
 esac
@@ -135,43 +136,29 @@ esac
 configure-mailwatch
 
 #####################apply adjustments for MTAs ########################
-PS3='Which MTA do you want to use with MailWatch? (it should already be installed):'
-options=("sendmail" "postfix" "exim" "skip")
-select opt in "${options[@]}"
-do
-    logprint "Selected mta $opt"
-    case $opt in
-        "sendmail")
-            logprint "Not yet supported"
-#TODO
-            sleep 1
-            break
-            ;;
-        "postfix")
-            logprint "Configure MailScanner for use with postfix"
-            "$InstallFilesFolder/setup.scripts/postfix/mailwatch-postfix.sh" "$Webuser"
-            sleep 1
-            break
-            ;;
-
-        "exim")
-            logprint "Configure MailScanner for use with exim"
-            "$InstallFilesFolder/setup.scripts/exim/mailwatch-exim.sh" "$Webuser"
-            sleep 1
-            break
-            ;;
-        *)
-            logprint "Not configuring mta"
-            sleep 1
-            break
-            ;;
-    esac
-done
+logprint 'Which MTA do you want to use with MailWatch? (it should already be installed):'
+ask 'MTAs: 1:postfix, 2:exim, 3:sendmail, 4/n: skip' useMta
+logprint "Selected mta $useMta"
+if [ "$useMta" == "1" ]; then
+    logprint "Configure MailScanner for use with postfix"
+    "$InstallFilesFolder/setup.scripts/postfix/mailwatch-postfix.sh" "$Webuser"
+elif [ "$useMta" == "2" ];then
+    logprint "Configure MailScanner for use with exim"
+    "$InstallFilesFolder/setup.scripts/exim/mailwatch-exim.sh" "$Webuser"
+elif [ "$useMta" == "3" ]; then
+    logprint "Sendmail is not yet supported. If you have experience with sendmail and want to help support this please contact us at https://github.com/mailwatch/mailwatch-install-script"
+    #TODO
+else
+    logprint "Not configuring mta"
+fi
+sleep 1
 
 configure-mailscanner
 
 #todo relay files
 logprint "Install finished!"
+resetVariables
+logprint ""
 logprint "Next steps you have to do are:"
 logprint "$EndNotice"
 logprint " * adjust your mta and web server configs"
