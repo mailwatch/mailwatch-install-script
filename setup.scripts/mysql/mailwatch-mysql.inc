@@ -42,11 +42,11 @@ function configure-mysql() {
     if [ "$IsUpgrade" == 1 ]; then
         logprint "Not creating sql db because we are running an upgrade"
     elif [ "$mysqlInstalled" == "1" ]; then
-        ask "Root sql user (with rights to create db)[root]:" SqlRoot
+        ask "Root sql user (with rights to create db)[root]: " SqlRoot
         if [ -z $SqlRoot ]; then
             SqlRoot="root"
         fi
-        ask "Passwort for root sql user" SqlRootPwd
+        ask "Passwort for root sql user: " SqlRootPwd
         logprint "Creating sql database and setting permission."
         mysql -u $SqlRoot -p$SqlRootPwd < "$MailWatchTmpDir/create.sql"
         mysql -u $SqlRoot -p$SqlRootPwd --execute="GRANT ALL ON $SqlDb.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
