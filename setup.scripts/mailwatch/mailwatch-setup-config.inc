@@ -49,7 +49,7 @@ function resetVariables() {
     logprint "Clean up variables"
     installMailScanner=
     WebFolder=
-    overwriteWebFolder
+    overwriteWebFolder=
     upgrading=
     SqlUser=
     SqlPwd=
