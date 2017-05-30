@@ -5,13 +5,13 @@ MailScannerTmpDir="$TmpDir/mailscanner/"
 
 function install-mailscanner() {
     logprint ""
-    if [ "$PM" == "yum" ]; then
+    if [[ "$PM" == "yum"* ]]; then
         MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
-    elif [ "$PM" == "apt-get" ]; then
+    elif [[ "$PM" == "apt-get"* ]]; then
         MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.deb.tar.gz"
     fi
 
-    read -p "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
+    ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
     if [ -z $installMailScanner ] || [ "$installMailScanner" == "y" ]; then
         logprint "Starting MailScanner install"
         mkdir -p /tmp/mailwatchinstall/mailscanner
