@@ -5,7 +5,7 @@ installMailScanner=
 #Path to new/old web directory
 WebFolder=
 #If WebFolder exists this confirms to overwrite it
-overwriteWebFolder
+overwriteWebFolder=
 #When WebFolder exists this will save the old conf.php, skin.css
 upgrading=
 
