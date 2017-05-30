@@ -16,7 +16,7 @@ function ask() {
 }
 
 function detectos() {
-    if [ -z $confirmPackageInstalls ] && [ "$confirmPackageInstalls" == "y"]; then
+    if ! [ -z "$confirmPackageInstalls" ] && [ "$confirmPackageInstalls" == "y" ]; then
         packageConfirm=" -y "
         #may add export DEBIAN_FRONTEND=noninteractive (for deb based) so that the install is completely unattanded
         #(see https://serverfault.com/questions/143968/automate-the-installation-of-postfix-on-ubuntu)
