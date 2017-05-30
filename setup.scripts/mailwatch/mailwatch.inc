@@ -16,9 +16,14 @@ function ask() {
 }
 
 function detectos() {
+    if [ -z $confirmPackageInstalls ] && [ "$confirmPackageInstalls" == "y"]; then
+        packageConfirm=" -y "
+        #may add export DEBIAN_FRONTEND=noninteractive (for deb based) so that the install is completely unattanded
+        #(see https://serverfault.com/questions/143968/automate-the-installation-of-postfix-on-ubuntu)
+    fi
     if cat /etc/*release | grep CentOS; then
         OS="CentOS"
-        PM="yum"
+        PM="yum $packageConfirm"
         #find OS version
         if cat /etc/*release | grep 5; then
             OSVersion="5"
@@ -29,13 +34,13 @@ function detectos() {
         fi
     elif cat /etc/*release | grep ^NAME | grep Red; then
         OS="RedHat"
-        PM="yum"
+        PM="yum $packageConfirm"
     elif cat /etc/*release | grep ^NAME | grep Fedora; then
         OS="Fedora"
-        PM="yum"
+        PM="yum $packageConfirm"
     elif cat /etc/*release | grep -i Debian; then
         OS="Debian"
-        PM="apt-get"
+        PM="apt-get $packageConfirm"
     else
         echo "OS NOT SUPPORTED - Please perform a manual install"
         exit 1;
