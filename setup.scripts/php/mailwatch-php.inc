@@ -2,7 +2,7 @@
 
 function install-php-core() {
     logprint ""
-    read -p "MailWatch requires the php packages php php-gd and php-mysqlnd. Do you want to install them if missing?(y/n)[y]: " installPhp
+    ask "MailWatch requires the php packages php php-gd and php-mysqlnd. Do you want to install them if missing?(y/n)[y]: " installPhp
     if [ -z $installPhp ] || [ "$installPhp" == "y" ]; then
         logprint "Installing required php packages"
         # since debian 9 and ubuntu 16 packages are php php-gd etc. instead of php5.
@@ -24,7 +24,7 @@ function install-php-core() {
 
 function install-php-ldap() {
     logprint ""
-    read -p "Do you want to use LDAP for user authentication (requires php-ldap)? (y/n)[y]: " installLdap
+    ask "Do you want to use LDAP for user authentication (requires php-ldap)? (y/n)[y]: " installLdap
     if [ -z $installLdap ] || [ "$installLdap" == "y" ]; then
         logprint "Installing required php-ldap package"
         if [ "$OS" == "Debian" ]; then
@@ -43,7 +43,7 @@ function install-php-ldap() {
 
 function install-php-rpc() {
     logprint ""
-    read -p "Do you want to use RPC for this server (requires php-xml)? (y/n)[y]: " installRpc
+    ask "Do you want to use RPC for this server (requires php-xml)? (y/n)[y]: " installRpc
     if [ -z $installRpc ] || [ "$installLdap" == "y" ]; then
         logprint "Installing required php-xml package"
         if [ "$OS" == "Debian" ]; then

@@ -5,6 +5,16 @@ function logprint {
     echo -e "$1" >> /root/mailwatchInstall.log
 }
 
+function ask() {
+    message="$1"
+    var="$2"
+    if [ -z "${!var}" ]; then
+        read -r -p "$message" "$var"
+    else
+        logprint "$var set by setup-config. Using that value"
+    fi
+}
+
 function detectos() {
     if cat /etc/*release | grep CentOS; then
         OS="CentOS"
@@ -49,15 +59,12 @@ function download-mailwatch() {
 function install-mailwatch() {
     ################# Copy MailWatch files and set permissions ##################
     if [ -d $WebFolder ]; then
-        read -p "Folder $WebFolder already exists. Old files except config.php and skin.css will be removed.  Do you want to continue?(y/n)[n]: " response
-        if [ -z $response ]; then
-            logprint "Stopping setup on user request"
-            exit
-        elif [ "$response" == "n" ]; then
+        ask "Folder $WebFolder already exists. Old files except config.php and skin.css will be removed.  Do you want to continue?(y/n)[n]: " overwriteWebFolder
+        if [ -z $overwriteWebFolder ] || [ "$overwriteWebFolder" == "n" ]; then
             logprint "Stopping setup on user request"
             exit
         fi
-        read -p "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]" upgrading
+        ask "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]" upgrading
         if [ -z $upgrading ] || [ "$upgrading" == "y" ]; then
             if [ -f "$WebFolder/conf.php" ]; then
                 IsUpgrade=1
@@ -92,19 +99,19 @@ function configure-sqlcredentials() {
     if [ "$IsUpgrade" == 0 ]; then
         logprint "Setting up sql credentials"
         #get sql credentials
-        read -p "SQL user for mailwatch[mailwatch]:" SqlUser
+        ask "SQL user for mailwatch[mailwatch]:" SqlUser
         if [ -z $SqlUser ]; then
             SqlUser="mailwatch"
         fi
-        read -p "SQL password for mailwatch[mailwatch]:" SqlPwd
+        ask "SQL password for mailwatch[mailwatch]:" SqlPwd
         if [ -z $SqlPwd ]; then
             SqlPwd="mailwatch"
         fi
-        read -p "SQL database for mailwatch[mailscanner]:" SqlDb
+        ask "SQL database for mailwatch[mailscanner]:" SqlDb
         if [  -z $SqlDb ]; then
             SqlDb="mailscanner"
         fi
-        read -p "SQL host of database[localhost]:" SqlHost
+        ask "SQL host of database[localhost]:" SqlHost
         if [ -z $SqlHost ]; then
             SqlHost="localhost"
         fi

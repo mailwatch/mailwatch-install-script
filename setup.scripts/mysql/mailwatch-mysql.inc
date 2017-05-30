@@ -5,8 +5,8 @@ function install-mysql() {
     ############ Configure mysql server ################
     logprint ""
     if ! ( type "mysqld" > /dev/null 2>&1 ) ; then
-        read -p "No mysql server found. Do you want to install mariadb as sql server?(y/n)[y]: " response
-        if [ -z $response ] || [ $response == "y" ]; then
+        ask "No mysql server found. Do you want to install mariadb as sql server?(y/n)[y]: " installMariadb
+        if [ -z $installMariadb ] || [ $installMariadb == "y" ]; then
             logprint "Start install of mariadb"
             if [ $OS == "CentOS" ]; then
                 logprint "Adding MariaDB 10.1 Repo"
@@ -35,16 +35,18 @@ function configure-mysql() {
     if [ "$IsUpgrade" == 1 ]; then
         logprint "Not creating sql db because we are running an upgrade"
     elif [ "$mysqlInstalled" == "1" ]; then
-        read -p "Root sql user (with rights to create db)[root]:" SqlRoot
+        ask "Root sql user (with rights to create db)[root]:" SqlRoot
         if [ -z $SqlRoot ]; then
             SqlRoot="root"
         fi
-        logprint "Creating sql database and setting permission. You now need to enter the password of the root sql user twice"
-        mysql -u $SqlRoot -p < "$MailWatchTmpDir/create.sql"
-        mysql -u $SqlRoot -p --execute="GRANT ALL ON $SqlDb.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
+        ask "Passwort for root sql user" SqlRootPwd
+        logprint "Creating sql database and setting permission."
+        mysql -u $SqlRoot -p$SqlRootPwd < "$MailWatchTmpDir/create.sql"
+        mysql -u $SqlRoot -p$SqlRootPwd --execute="GRANT ALL ON $SqlDb.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
+        SqlRootPwd=
 
-        read -p "Enter an admin user for the MailWatch web interface: " MWAdmin
-        read -p "Enter password for the admin: " MWAdminPwd
+        ask "Enter an admin user for the MailWatch web interface: " MWAdmin
+        ask "Enter password for the admin: " MWAdminPwd
         logprint "Create MailWatch web gui admin"
         mysql -u $SqlUser -p$SqlPwd $SqlDb --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
     else
