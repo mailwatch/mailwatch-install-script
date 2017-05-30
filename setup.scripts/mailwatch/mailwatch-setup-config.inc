@@ -20,6 +20,9 @@ webserverSelect=
 #when skipping web server install, the permissions will be assigned to this user
 WebUser=
 
+#which mta to configure for MW: 1:postfix, 2:exim, 3:sendmail, 4/n/others:skip
+useMta=
+
 #php install: will install/upgrade neccessary packets with system package manager
 # base php packets need for MW
 installPhp=
@@ -54,6 +57,7 @@ function resetVariables() {
     SqlHost=
     webserverSelect=
     WebUser=
+    useMta=
     installPhp=
     installLdap=
     installRpc=
