@@ -47,9 +47,9 @@ install-mailscanner
 
 ##ask directory for web files
 logprint ""
-ask "In what location should MailWatch be installed (web files directory)?[/opt/mailwatch/]:" WebFolder
+ask "In what location should MailWatch be installed (web files directory)?[/opt/mailwatch/public/]:" WebFolder
 if [ -z $WebFolder ]; then
-    WebFolder="/opt/mailwatch/"
+    WebFolder="/opt/mailwatch/public/"
 fi
 logprint "Using web directory $WebFolder"
 
