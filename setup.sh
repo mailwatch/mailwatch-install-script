@@ -47,9 +47,9 @@ install-mailscanner
 
 ##ask directory for web files
 logprint ""
-ask "In what location should MailWatch be installed (web files directory)?[/var/www/html/mailscanner/]:" WebFolder
+ask "In what location should MailWatch be installed (web files directory)?[/opt/mailwatch/]:" WebFolder
 if [ -z $WebFolder ]; then
-    WebFolder="/var/www/html/mailscanner/"
+    WebFolder="/opt/mailwatch/"
 fi
 logprint "Using web directory $WebFolder"
 
@@ -153,6 +153,7 @@ else
 fi
 sleep 1
 
+configure-cronjobs
 configure-mailscanner
 
 #todo relay files
