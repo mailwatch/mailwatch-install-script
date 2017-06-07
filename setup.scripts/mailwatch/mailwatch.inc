@@ -157,7 +157,7 @@ function configure-mailwatch() {
        logprint "Upgrading MailWatch conf and db"
        cp "$TmpDir/mailwatch_conf.php.old" "$WebFolder/conf.php"
        sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
-       "$MailWatchTmpDir/upgrade.php" "$WebFolder/functions.php"
+       "$MailWatchTmpDir/upgrade.php" --skip-user-confirm "$WebFolder/functions.php"
        if [ -f "$TmpDir/mailwatch_skin.css.old" ]; then
            logprint "Restoring old skin.css file"
            cp "$TmpDir/mailwatch_skin.css.old" "$WebFolder/skin.css"
@@ -165,3 +165,26 @@ function configure-mailwatch() {
    fi
 }
 
+function configure-cronjobs() {
+    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
+    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
+    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
+    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch/mailwatch_geoip_update.php
+    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
+    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
+    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
+    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php
+    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch
+    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly
+    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php /usr/local/bin/mailwatch_quarantine_maint.php
+    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php /usr/local/bin/mailwatch_quarantine_report.php
+    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php /usr/local/bin/mailwatch_db_clean.php
+    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php /usr/local/bin/mailwatch_geoip_update.php
+    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch /etc/cron.daily/mailwatch
+    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly /etc/cron.monthly/mailwatch
+
+    sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" $MailWatchTmpDir/tools/sudo/mailwatch
+    cp $MailWatchTmpDir/tools/sudo/mailwatch /etc/sudoers.d/mailwatch
+
+    sed -i -e "s/q_days=.*/q_days=0/" /etc/MailScanner/defaults
+}
