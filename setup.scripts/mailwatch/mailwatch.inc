@@ -137,10 +137,6 @@ function configure-sqlcredentials() {
 
 function configure-mailwatch() {
     logprint "Settings permissions for web directory"
-    chown root:"$Webuser" $WebFolder/images
-    chmod ug+rwx $WebFolder/images
-    chown root:"$Webuser" $WebFolder/images/cache
-    chmod ug+rwx $WebFolder/images/cache
     chown root:"$Webuser" $WebFolder/temp
     chmod g+rw $WebFolder/temp
 
@@ -166,10 +162,10 @@ function configure-mailwatch() {
 }
 
 function configure-cronjobs() {
-    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
-    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
-    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
-    sed -i -e "s/^\$pathToFunctions = '.*';/\$pathToFunctions = '$WebFolder/functions.php';/" $MailWatchTmpDir/tools/Cron_jobs/mailwatch/mailwatch_geoip_update.php
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php
     chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
     chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
     chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
@@ -183,8 +179,23 @@ function configure-cronjobs() {
     cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch /etc/cron.daily/mailwatch
     cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly /etc/cron.monthly/mailwatch
 
-    sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" $MailWatchTmpDir/tools/sudo/mailwatch
-    cp $MailWatchTmpDir/tools/sudo/mailwatch /etc/sudoers.d/mailwatch
-
     sed -i -e "s/q_days=.*/q_days=0/" /etc/MailScanner/defaults
+}
+
+function configure-sudo() {
+    logprint ""
+    if ! ( type "sudo" > /dev/null 2>&1 ) ; then
+        ask "Some functions need sudo (eg. SpamAssasin Lint, MailScanner Lint). Do you want to install it? (y/n)[y]: " installSudo
+        if [ -z $installSudo ] || [ "$installSudo" == "y" ]; then
+            logprint "Installing sudo"
+            $PM install sudo
+        else
+            logprint "Not installing sudo."
+        fi
+    fi
+    if ! ( type "sudo" > /dev/null 2>&1 ) ; then
+        logprint "Sudo is installed so we are configuring it for use with MailWatch"
+        sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" $MailWatchTmpDir/tools/sudo/mailwatch
+        cp $MailWatchTmpDir/tools/sudo/mailwatch /etc/sudoers.d/mailwatch
+    fi
 }
