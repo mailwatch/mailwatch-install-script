@@ -155,6 +155,7 @@ sleep 1
 
 configure-cronjobs
 configure-mailscanner
+configure-sudo
 
 #todo relay files
 logprint "Install finished!"
