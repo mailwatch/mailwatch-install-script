@@ -31,9 +31,28 @@ function install-mailscanner() {
     logprint "Stopping mailscanner"
     service mailscanner stop
 
-    logprint ""
-    logprint "Installing Encoding::FixLatin"
-    cpan -i Encoding::FixLatin
+    install-fixlatin
+    install-digestsha1
+}
+
+function install-fixlatin() {
+    perl -MEncoding::FixLatin -e 1 &> /dev/null
+    if [ "$?" == "0" ]; then
+        echo "Encoding::FixLatin already installed"
+    else
+        echo "Encoding::FixLatin not installed. Installing it now."
+        cpan -i Encoding::FixLatin
+    fi
+}
+
+function install-digestsha1() {
+    perl -MDigest::SHA1 -e 1 &> /dev/null
+    if [ "$?" == "0" ]; then
+        echo "Digest::SHA1 already installed"
+    else
+        echo "Digest::SHA1 not installed. Installing it now."
+        cpan -i Digest::SHA1
+    fi
 }
 
 function configure-mailscanner() {
