@@ -2,18 +2,35 @@
 
 function install-php-core() {
     logprint ""
-    ask "MailWatch requires the php packages php php-gd and php-mysqlnd. Do you want to install them if missing?(y/n)[y]: " installPhp
+    logprint "MailWatch requires the php packages php php-gd, php-mysqlnd, php-curl and libapache2-mod-php/php-fpm." 
+    ask " Do you want to install them if missing?(y/n)[y]: " installPhp
     if [ -z $installPhp ] || [ "$installPhp" == "y" ]; then
         logprint "Installing required php packages"
         # since debian 9 and ubuntu 16 packages are php php-gd etc. instead of php5.
         # So we test if the php package is available over apt and if that's not the case we install php5
         if [ "$OS" == "Debian" ]; then
             if [[ -z $(apt-cache search php | grep "^php ") ]]; then
+                if [[ "$WebServer" == "apache" ]]; then
+                    $PM install libapache2-mod-php5
+                elif [[ "$WebServer" == "nginx" ]]; then
+                    $PM install php5-fpm
+                fi
                 $PM install php5 php5-gd php5-mysqlnd php5-curl
             else
+                if [[ "$WebServer" == "apache" ]]; then
+                    $PM install libapache2-mod-php
+                elif [[ "$WebServer" == "nginx" ]]; then
+                    $PM install php-fpm
+                fi
                 $PM install php php-gd php-mysql php-curl php-mbstring
             fi
         else
+# TODO: check if specific dependency has to be installed for apache/nginx so only one webserver will be installed
+#            if [[ "$WebServer" == "apache" ]]; then
+#               $PM install libapache2-mod-php
+#            elif [[ "$WebServer" == "nginx" ]]; then
+#                $PM install  php-fpm
+#            fi
             $PM install php php-gd php-mysqlnd php-curl
         fi
     else
