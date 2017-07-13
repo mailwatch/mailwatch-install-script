@@ -46,7 +46,7 @@ function configure-mysql() {
         if [ -z $SqlRoot ]; then
             SqlRoot="root"
         fi
-        ask "Passwort for root sql user: " SqlRootPwd
+        ask "Password for root sql user: " SqlRootPwd
         logprint "Creating sql database and setting permission."
         mysql -u $SqlRoot -p$SqlRootPwd < "$MailWatchTmpDir/create.sql"
         mysql -u $SqlRoot -p$SqlRootPwd --execute="GRANT ALL ON $SqlDb.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO $SqlUser@localhost IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
