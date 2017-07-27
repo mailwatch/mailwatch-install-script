@@ -22,7 +22,7 @@ function install-mailscanner() {
         logprint "Starting MailScanner install script"
         "$MailScannerTmpDir/MailScanner-$MailScannerVersion/install.sh"
         logprint "MailScanner install finished."
-        EndNotice="$EndNotice \n * Adjust /etc/MailScanner.conf to your needs \n * Set run_mailscanner=1 in /etc/MailScanner/defaults"
+        EndNotice="$EndNotice \n * Adjust /etc/MailScanner/MailScanner.conf to your needs \n * Set run_mailscanner=1 in /etc/MailScanner/defaults"
         sleep 1
     else
         logprint "Not installing MailScanner"
