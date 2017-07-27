@@ -61,7 +61,7 @@ function install-php-ldap() {
 function install-php-rpc() {
     logprint ""
     ask "Do you want to use RPC for this server (requires php-xml)? (y/n)[y]: " installRpc
-    if [ -z $installRpc ] || [ "$installLdap" == "y" ]; then
+    if [ -z $installRpc ] || [ "$installRpc" == "y" ]; then
         logprint "Installing required php-xml package"
         if [ "$OS" == "Debian" ]; then
              if [[ -z $(apt-cache search php-xml | grep "^php-xml ") ]]; then
