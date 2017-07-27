@@ -71,4 +71,5 @@ function resetVariables() {
     MWAdmin=
     MWAdminPwd=
     confirmPackageInstalls=
+    EndNotice=
 }
