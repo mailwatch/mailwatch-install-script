@@ -122,7 +122,7 @@ case $WebServer in
         else
             Webuser="www-data"
         fi
-        logprint "not available yet"
+        logprint "Nginx automatic configuration not available yet"
         sleep 1
         ;;
     "skip")
