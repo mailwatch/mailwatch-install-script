@@ -4,8 +4,8 @@ InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 MailScannerVersion="5.0.3-7"
 
 TmpDir="/tmp/mailwatchinstall"
-#MailWatchVersion="v1.2.2"
-#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.2"
+#MailWatchVersion="v1.2.4"
+#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.4"
 MailWatchVersion="develop"
 MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-develop"
 IsUpgrade=0
