@@ -159,11 +159,13 @@ configure-sudo
 
 #todo relay files
 logprint "Install finished!"
-resetVariables
 logprint ""
 logprint "Next steps you have to do are:"
 logprint "$EndNotice"
 logprint " * adjust your mta and web server configs"
-logprint " * adjust the MailWatch config $WebFolder/conf.php"
+logprint " * adjust the MailWatch config ${WebFolder}conf.php"
+
+resetVariables
+
 echo ""
 echo "You can find the log file at /root/mailwatchInstall.log"
