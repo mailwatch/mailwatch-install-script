@@ -137,7 +137,7 @@ configure-mailwatch
 
 #####################apply adjustments for MTAs ########################
 logprint 'Which MTA do you want to use with MailWatch? (it should already be installed):'
-ask 'MTAs: 1:postfix, 2:exim, 3:sendmail, 4/n: skip' useMta
+ask 'MTAs: 1:postfix, 2:exim, 3:sendmail, 4/n: skip ' useMta
 logprint "Selected mta $useMta"
 if [ "$useMta" == "1" ]; then
     logprint "Configure MailScanner for use with postfix"
