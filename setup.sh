@@ -1,11 +1,11 @@
 #!/bin/bash
 # Bash Menu Script Example
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-MailScannerVersion="5.0.6-3"
+MailScannerVersion="5.0.6-4"
 
 TmpDir="/tmp/mailwatchinstall"
-#MailWatchVersion="v1.2.4"
-#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.4"
+#MailWatchVersion="v1.2.6"
+#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.6"
 MailWatchVersion="develop"
 MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-develop"
 IsUpgrade=0
