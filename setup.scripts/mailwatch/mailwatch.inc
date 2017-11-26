@@ -21,7 +21,7 @@ function detectos() {
         #may add export DEBIAN_FRONTEND=noninteractive (for deb based) so that the install is completely unattanded
         #(see https://serverfault.com/questions/143968/automate-the-installation-of-postfix-on-ubuntu)
     fi
-    if cat /etc/*release | grep CentOS; then
+    if [[ $(cat /etc/*release | grep CentOS) ]]; then
         OS="CentOS"
         PM="yum $packageConfirm"
         #find OS version
@@ -32,24 +32,65 @@ function detectos() {
         elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 7; then
             OSVersion="7"
         fi
-    elif cat /etc/*release | grep ^NAME | grep Red; then
+    elif [[ $(cat /etc/*release | grep ^NAME | grep Red) ]]; then
         OS="RedHat"
         PM="yum $packageConfirm"
-    elif cat /etc/*release | grep -i Debian; then
+    elif [[ $(cat /etc/*release | grep -i Debian) ]]; then
         OS="Debian"
         PM="apt-get $packageConfirm"
     else
-        echo "OS NOT SUPPORTED - Please perform a manual install"
+        logprint "OS NOT SUPPORTED - Please perform a manual install"
         exit 1;
     fi
 
     #Find Architecture (i686/x86_64)
-    if arch | grep 'x86_64' ; then
+    if [[ $(arch | grep 'x86_64') ]]; then
         ARCH="64"
-    elif arch | grep 'i686' ; then
+    elif [[ $(arch | grep 'i686') ]]; then
         ARCH="32"
     else
         ARCH="unknown"
+    fi
+    logprint "System is $OS on $ARCH architecture"
+}
+
+function prepare-webserver() {
+    logprint ""
+    if [ -z "$WebServer"]; then
+        if ( type "httpd" > /dev/null 2>&1 ) || ( type "apache2" > /dev/null 2>&1 ); then
+            WebServer="apache"
+            logprint "Detected installed web server apache. We will use it for MailWatch"
+        elif ( type "nginx" > /dev/null 2>&1 ); then
+            WebServer="nginx"
+            logprint "Detected installed web server nginx. We will use it for MailWatch"
+        else
+            logprint "We're unable to find your webserver. We support Apache and Nginx. (default: Apache)";
+            echo "Do you wish to install a webserver?"
+            echo "1 - Apache"
+            echo "2 - Nginx"
+            echo "n - do not install or configure"
+            echo;
+            ask  "Select Webserver: " webserverSelect
+            if [[ $webserverSelect =~ ^([nN][oO])$ ]]; then
+                #do not install or configure webserver
+                logprint "No WebServer will be configured"
+                WebServer="skip"
+            elif [ $webserverSelect == 1 ] || [ -z "$webserverSelect" ]; then
+                #Apache
+                logprint "Using apache"
+                WebServer="apache"
+            elif [ $webserverSelect == 2 ]; then
+                #Nginx
+                logprint "Using nginx"
+                WebServer="nginx"
+            fi
+
+        fi
+    elif [ "$WebServer" != "apache" ] && [ "$WebServer" != "nginx" ] && [ "$WebServer" != "skip" ]; then
+        logprint "Invalid WebServer defined (valid values are 'apache', 'nginx' and 'skip'"
+        exit 1
+    else
+        logprint "Using WebServer $WebServer defined by setup config"
     fi
 }
 
@@ -66,9 +107,7 @@ function download-mailwatch() {
     fi
 }
 
-
-function install-mailwatch() {
-    ################# Copy MailWatch files and set permissions ##################
+function check-and-prepare-update() {
     if [ -d $WebFolder ]; then
         ask "Folder $WebFolder already exists. Old files except config.php and skin.css will be removed.  Do you want to continue?(y/n)[n]: " overwriteWebFolder
         if [ -z $overwriteWebFolder ] || [ "$overwriteWebFolder" == "n" ]; then
@@ -76,26 +115,33 @@ function install-mailwatch() {
             exit
         fi
         ask "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]" upgrading
-        if [ -z $upgrading ] || [ "$upgrading" == "y" ]; then
-            if [ -f "$WebFolder/conf.php" ]; then
-                IsUpgrade=1
-                logprint "Saving old MailWatch config.php file"
-                cp "$WebFolder/conf.php" "$TmpDir/mailwatch_conf.php.old"
-            else
-                logprint "You wanted to upgrade MailWatch but we couldn't find an old config file. Stopping setup."
-                exit
-            fi
-            if [ -f "$WebFolder/skin.css" ]; then
-                logprint "Saving old MailWatch skin.css file"
-                cp "$WebFolder/skin.css" "$TmpDir/mailwatch_skin.css.old"
-            else
-                logprint "No old MailWatch skin.css file found"
-            fi
+    fi
+}
+
+function install-mailwatch() {
+    download-mailwatch
+    ################# Copy MailWatch files and set permissions ##################
+    if [ -z $upgrading ] || [ "$upgrading" == "y" ]; then
+        if [ -f "$WebFolder/conf.php" ]; then
+            IsUpgrade=1
+            logprint "Saving old MailWatch config.php file"
+            cp "$WebFolder/conf.php" "$TmpDir/mailwatch_conf.php.old"
         else
-            logprint "No Upgrade. All existing content in the given folder will be overwritten"
+            logprint "You wanted to upgrade MailWatch but we couldn't find an old config file. Stopping setup."
+            exit
         fi
-        logprint "Clearing web files directory"
+        if [ -f "$WebFolder/skin.css" ]; then
+            logprint "Saving old MailWatch skin.css file"
+            cp "$WebFolder/skin.css" "$TmpDir/mailwatch_skin.css.old"
+        else
+           logprint "No old MailWatch skin.css file found"
+        fi
+    else
+        logprint "No Upgrade. All existing content in the given folder will be overwritten"
+    fi
+    if [ -z $WebFolder ]; then
         rm -R $WebFolder
+        logprint "Clearing web files directory"
     fi
 
     #copy web files
