@@ -17,6 +17,7 @@ source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
 source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
 source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
 source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
+source "$InstallFilesFolder/setup.scripts/apache/mailwatch-apache.inc"
 
 if [ -d $TmpDir ]; then
     logprint "Warning: temporary directory from previous install found."
@@ -43,6 +44,7 @@ if [[ -z $(grep mtagroup /etc/group) ]]; then
     logprint "Creating group mtagroup"
     groupadd mtagroup
 fi
+logprint ""
 
 ##ask directory for web files
 ask "In what location should MailWatch be installed (web files directory)?[/opt/mailwatch/public/]:" WebFolder
@@ -56,6 +58,7 @@ check-and-prepare-update
 #also detects MTA
 prepare-mailscanner
 prepare-webserver
+prepare-php-install
 configure-sqlcredentials
 
 
@@ -69,20 +72,7 @@ configure-mysql
 ######################Configure web server ########################
 logprint ""
 if [ "$WebServer" == "apache" ]; then
-    #Apache
-    logprint "Installing apache"
-    if [ $PM == "yum" ]; then
-        $PM install httpd
-    else
-        $PM install apache2
-    fi
-    logprint "Creating config for apache"
-    "$InstallFilesFolder/setup.scripts/apache/mailwatch-apache.sh" "$WebFolder"
-    if [[ "$PM" == "yum"* ]]; then
-        Webuser="apache"
-    else
-        Webuser="www-data"
-    fi
+    install-apache
 elif [ "$WebServer" == "nginx" ]; then
     #Nginx
     logprint "Installing nginx"

@@ -15,8 +15,30 @@ function ask() {
     fi
 }
 
+#The following two functions returns the packages that are passed as arguments and aren't installed
+function getMissingDebianPackages() {
+  missing=""
+  installedPackages=$(dpkg -l | grep "ii" | cut -d " " -f3 )
+  for param in "$@"; do
+    if [[ -z $(echo "$installedPackages" | grep "^$param\$") ]]; then
+      missing="$missing $param"
+    fi
+  done
+  echo "$missing"
+}
+function getMissingRpmPackages() {
+  missing=""
+  installedPackages=$(yum list installed | cut -d "." -f1)
+  for param in "$@"; do
+    if [[ -z $(echo "$installedPackages" | grep "^$param\$") ]]; then
+      missing="$missing $param"
+    fi
+  done
+  echo "$missing"
+}
+
 function detectos() {
-    if ! [ -z "$confirmPackageInstalls" ] && [ "$confirmPackageInstalls" == "y" ]; then
+    if ! [ -z "$confirmPackageInstalls" ] || [ "$confirmPackageInstalls" != "y" ]; then
         packageConfirm=" -y "
         #may add export DEBIAN_FRONTEND=noninteractive (for deb based) so that the install is completely unattanded
         #(see https://serverfault.com/questions/143968/automate-the-installation-of-postfix-on-ubuntu)
@@ -71,18 +93,21 @@ function prepare-webserver() {
             echo "n - do not install or configure"
             echo;
             ask  "Select Webserver: " webserverSelect
-            if [[ $webserverSelect =~ ^([nN][oO])$ ]]; then
+            if [[ "$webserverSelect" =~ ^([nN][oO])$ ]]; then
                 #do not install or configure webserver
                 logprint "No WebServer will be configured"
                 WebServer="skip"
-            elif [ $webserverSelect == 1 ] || [ -z "$webserverSelect" ]; then
+            elif [ "$webserverSelect" == 1 ] || [ -z "$webserverSelect" ]; then
                 #Apache
                 logprint "Using apache"
                 WebServer="apache"
-            elif [ $webserverSelect == 2 ]; then
+            elif [ "$webserverSelect" == 2 ]; then
                 #Nginx
                 logprint "Using nginx"
                 WebServer="nginx"
+            else
+                logprint "Invalid web server"
+                exit 1
             fi
 
         fi
@@ -172,7 +197,7 @@ function configure-sqlcredentials() {
         if [ -z $SqlHost ]; then
             SqlHost="localhost"
         fi
-        logprint "Using sql credentials user: $SqlUser; password: $SqlPwd; db: $SqlDb; host: $SqlHost"
+        logprint "Using sql credentials user: $SqlUser; password: XXXXX; db: $SqlDb; host: $SqlHost"
     else
         SqlUser=$(grep "define('DB_USER" "$TmpDir/mailwatch_conf.php.old" | head -n 1 |  cut -d"'" -f 4)
         SqlPwd=$(grep "define('DB_PASS" "$TmpDir/mailwatch_conf.php.old" | head -n 1 |  cut -d"'" -f 4)

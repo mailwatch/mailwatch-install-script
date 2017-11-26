@@ -79,10 +79,9 @@ function install-mailscanner() {
         tar -xzf "$MailScannerTmpDir/MailScanner.deb.tar.gz" -C "$MailScannerTmpDir/"
         logprint "Starting MailScanner install script"
 
-        MSRESULT=eval "$MailScannerTmpDir/MailScanner-$MailScannerVersion/install.sh" "--MTA=$MTA"  "--installClamav=$useClamav" "--installCPAN=$useCpan" "--ignoreDeps=$ignoreDeps" "--ramdiskSize=$ramdiskSize"
-#        MSRESULT=eval "$MailScannerTmpDir/MailScanner-$MailScannerVersion/install.sh --MTA=$MTA  --installClamav=$useClamav --installCPAN=$useCpan --ignoreDeps=$ignoreDeps --ramdiskSize=$ramdiskSize"
-        if ! [[ "$MSRESULT" ]]; then
-            echo "Some error occured while installing MailScanner"
+        "$MailScannerTmpDir/MailScanner-$MailScannerVersion/install.sh" "--MTA=$MTA"  "--installClamav=$useClamav" "--installCPAN=$useCpan" "--ignoreDeps=$ignoreDeps" "--ramdiskSize=$ramdiskSize"
+        if [[ "$?" != "0" ]]; then
+            echo "Some error occured while installing MailScanner."
             exit 1
         fi
 
