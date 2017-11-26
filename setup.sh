@@ -18,7 +18,7 @@ source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
 source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
 source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
 
-if ! [ -d $TmpDir ]; then
+if [ -d $TmpDir ]; then
     logprint "Warning: temporary directory from previous install found."
     logprint "This usally means that a previous install is still running or was interrupted."
     logprint "In case of an upgrade you should make sure that your old conf.php and skin.css are still"
