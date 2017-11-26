@@ -16,12 +16,20 @@ SqlDb=
 SqlHost=
 
 #which web server shall be installed (1: apache, 2: nginx, others: skip)
-webserverSelect=
+WebServer=
 #when skipping web server install, the permissions will be assigned to this user
 WebUser=
 
 #which mta to configure for MW: 1:postfix, 2:exim, 3:sendmail, 4/n/others:skip
 useMta=
+#use/install clamav by mailscanner (y/n)
+useClamav=
+#use Cpan to install missing packages (y/n)
+useCpan=
+# ignore dependecies for MailScanner
+ignoreDeps=
+#RAM disk size for uMailScanner
+ramdiskSize=
 
 #php install: will install/upgrade neccessary packets with system package manager
 # base php packets need for MW
