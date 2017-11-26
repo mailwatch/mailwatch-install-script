@@ -53,7 +53,7 @@ MWAdminPwd=
 #install sudo (required for MailScanner Lint over the web interface)
 installSudo=
 
-#confirm each installation of packages done with the package manager
+#confirm each installation of packages done with the package manager (y/n). Default is n.
 confirmPackageInstalls=
 
 function resetVariables() {
