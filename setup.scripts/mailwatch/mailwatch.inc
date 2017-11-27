@@ -9,7 +9,12 @@ function ask() {
     message="$1"
     var="$2"
     if [ -z "${!var}" ]; then
-        read -r -p "$message" "$var"
+        if [ -z "$3" ]; then
+            read -r -p "$message" "$var"
+        elif [ "$3" == "pw" ]; then
+            read -r -s -p "$message" "$var"
+            echo ""
+        fi
     else
         logprint "$var set by setup-config. Using that value"
     fi
@@ -115,7 +120,7 @@ function prepare-webserver() {
         logprint "Invalid WebServer defined (valid values are 'apache', 'nginx' and 'skip'"
         exit 1
     else
-        logprint "Using WebServer $WebServer defined by setup config"
+        logprint "Using WebServer $WebServer as defined by setup config"
     fi
 }
 
@@ -139,7 +144,9 @@ function check-and-prepare-update() {
             logprint "Stopping setup on user request"
             exit
         fi
-        ask "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]" upgrading
+        ask "Are you upgrading mailwatch? Requires valid conf.php in the web files directory. (y/n)[y]: " upgrading
+    else
+        upgrading=n
     fi
 }
 
@@ -185,7 +192,7 @@ function configure-sqlcredentials() {
         if [ -z $SqlUser ]; then
             SqlUser="mailwatch"
         fi
-        ask "SQL password for mailwatch[mailwatch]:" SqlPwd
+        ask "SQL password for mailwatch[mailwatch]: (Input will not be shown)" SqlPwd "pw"
         if [ -z $SqlPwd ]; then
             SqlPwd="mailwatch"
         fi

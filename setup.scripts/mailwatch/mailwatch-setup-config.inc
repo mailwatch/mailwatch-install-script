@@ -14,6 +14,15 @@ SqlUser=
 SqlPwd=
 SqlDb=
 SqlHost=
+#install mariadb-server if no sql server was found
+installMariadb=
+#if "y" skips the mysql_secure_installation during the script. with "n" its run in non interactive mode which is a bit hackish and if something goes wrong can result in loss of root access to mysql
+#if undefined it asks interactively during install (y/n)
+skipSecureSqlInstallation=
+#sql user with rights to create the sql database and assign permissions to it (not used on upgrade)
+SqlRoot=
+#pwd for sql root user
+SqlRootPwd=
 
 #which web server shall be installed (1: apache, 2: nginx, others: skip)
 WebServer=
@@ -39,13 +48,6 @@ installLdap=
 # packages for use with rpc
 installRpc=
 
-#install mariadb-server if no sql server was found
-installMariadb=
-#sql user with rights to create the sql database and assign permissions to it (not used on upgrade)
-SqlRoot=
-#pwd for sql root user
-SqlRootPwd=
-
 #credentials for new MW admin (not used on upgrade)
 MWAdmin=
 MWAdminPwd=
@@ -57,7 +59,6 @@ installSudo=
 confirmPackageInstalls=
 
 function resetVariables() {
-    logprint "Clean up variables"
     installMailScanner=
     WebFolder=
     overwriteWebFolder=

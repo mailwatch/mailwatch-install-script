@@ -72,7 +72,6 @@ function install-php() {
         phpPackagesToInstall="$phpPackagesToInstall $missingPhpWebserverPackages"
     fi
     if ! [ -z "$phpPackagesToInstall" ]; then
-        echo "$phpPackagesToInstall"
-        $PM install "$phpPackagesToInstall"
+        $PM install ${phpPackagesToInstall}
     fi
 }
