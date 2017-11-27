@@ -1,24 +1,27 @@
 #!/bin/bash
 
-function install-apache {
+function install-webserver {
+#todo: vhost ssl, centos/redhat config
     #Apache
-    logprint "Installing apache"
-    if [ "$PM" == "yum" ]; then
-        $PM install httpd
-    else
-        $PM install apache2
-        if [[ -z $(apt-cache search php | cut -d " " -f 1 | grep "^libapache2-mod-php$") ]]; then
-            missingPhpWebserverPackages=$(getMissingDebianPackages "libapache2-mod-php5")
-        else
-            missingPhpWebserverPackages=$(getMissingRpmPackages "libapache2-mod-php")
-        fi
-    fi
-
     logprint "Creating config for apache"
     if ( type "apache2" > /dev/null 2>&1 ); then
         apacheBin="apache2"
+    elif ( type "httpd" > /dev/null 2>&1 ); then
+        apacheBin="httpd mod_ssl"
     else
-        apacheBin="httpd"
+        logprint "Installing apache"
+        if [ "$PM" == "yum" ]; then
+            $PM install httpd
+            apacheBin="httpd"
+        else
+            $PM install apache2
+            if [[ -z $(apt-cache search php | cut -d " " -f 1 | grep "^libapache2-mod-php$") ]]; then
+                missingPhpWebserverPackages=$(getMissingDebianPackages "libapache2-mod-php5")
+            else
+                missingPhpWebserverPackages=$(getMissingDebianPackages "libapache2-mod-php")
+            fi
+            apacheBin="apache2"
+        fi
     fi
 
     #backup old config

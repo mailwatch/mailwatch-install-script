@@ -1,5 +1,7 @@
 #!/bin/bash
 # Bash Menu Script Example
+set +o history
+
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 MailScannerVersion="5.0.6-5"
 
@@ -17,7 +19,6 @@ source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
 source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
 source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
 source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
-source "$InstallFilesFolder/setup.scripts/apache/mailwatch-apache.inc"
 
 if [ -d $TmpDir ]; then
     logprint "Warning: temporary directory from previous install found."
@@ -51,8 +52,25 @@ ask "In what location should MailWatch be installed (web files directory)?[/opt/
 if [ -z $WebFolder ]; then
     WebFolder="/opt/mailwatch/public/"
 fi
+logprint ""
 logprint "Using web directory $WebFolder"
-
+logprint "At which hostname should MailWatch be reachable once installed? \n\
+    Your MailWatch instance will then be reachable over https://<hostname>/. \n\
+    If you want to use a sub path of the local web server as MailWatch URI (not recommended) \n\
+    enter the full path here (including 'https://' or 'http://' and configure the web server manually. \n\
+    Examples can be found in the sub folders below the setup script."
+ask "Enter hostname/URI [$(hostname -f)]: " mwURI
+#todo use in scripts
+if [[ "$msURI" =~ ^(?!http[s]?://)[^/]*/ ]]; then
+    #uri does not contain http[s] at beginning but still contains a "/" somewhere
+    logprint "You have to either provide the full URI (including http[s]://..) or only the hostname"
+    exit 1
+elif ! [[ "$mwURI" =~ ^http[s]?://.+ ]]; then
+    #uri in url format (start with http[s]:// and then any other characters
+    uriIsHostname="y"
+else
+    uriIsHostname="n"
+fi
 check-and-prepare-update
 
 #also detects MTA
@@ -60,21 +78,22 @@ prepare-mailscanner
 prepare-webserver
 prepare-php-install
 configure-sqlcredentials
-
+prepare-mysql-install
 
 install-mailscanner
 install-mailwatch
 
 install-mysql
 
-configure-mysql
-
 ######################Configure web server ########################
 logprint ""
 if [ "$WebServer" == "apache" ]; then
-    install-apache
+    source "$InstallFilesFolder/setup.scripts/apache/mailwatch-apache.inc"
+    install-webserver
 elif [ "$WebServer" == "nginx" ]; then
-    #Nginx
+#    source "$InstallFilesFolder/setup.scripts/nginx/mailwatch-nginx.inc"
+#    install-webserver
+#Nginx
     logprint "Installing nginx"
     $PM install nginx
     if [[ "$PM" == "yum"* ]]; then
@@ -113,11 +132,10 @@ configure-cronjobs
 configure-mailscanner
 configure-sudo
 
-#todo relay files
 logprint "Install finished!"
 
 logprint "Cleanup temporary data"
-rm -rf /tmp/mailwatchinstall/*
+rm -rf /tmp/mailwatchinstall/
 resetVariables
 
 logprint ""
@@ -131,3 +149,4 @@ resetVariables
 echo ""
 echo "You can find the log file at /root/mailwatchInstall.log"
 
+set -o history
