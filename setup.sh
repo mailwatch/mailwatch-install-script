@@ -78,6 +78,7 @@ prepare-mailscanner
 prepare-webserver
 prepare-php-install
 configure-sqlcredentials
+prepare-sudo-install
 prepare-mysql-install
 
 install-mailscanner
@@ -130,7 +131,7 @@ sleep 1
 
 configure-cronjobs
 configure-mailscanner
-configure-sudo
+install-sudo
 
 logprint "Install finished!"
 

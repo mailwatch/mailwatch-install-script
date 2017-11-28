@@ -10,16 +10,19 @@ function prepare-mysql-install() {
         else
             logprint "No mysql server found and none will be installed. We assume that you have an other mysql server that you want to use. If not the setup will not work correctly."
             sleep 5
+            ask "Root sql user (with rights to create db)[root]: " SqlRoot
+            ask "Password for root sql user: (Input is not shown)" SqlRootPwd "pw"
         fi
     else
         mysqlInstalled="1"
         logprint "Found installed mysql server and will use that"
         ask "Root sql user (with rights to create db)[root]: " SqlRoot
-        if [ -z $SqlRoot ]; then
-            SqlRoot="root"
-        fi
         ask "Password for root sql user: (Input is not shown)" SqlRootPwd "pw"
     fi
+    if [ -z $SqlRoot ]; then
+        SqlRoot="root"
+    fi
+
 }
 
 function install-mysql() {
@@ -72,14 +75,14 @@ EOF
         logprint "Not creating sql db because we are running an upgrade"
     elif [ "$mysqlInstalled" == "1" ]; then
         logprint "Creating sql database and setting permission."
-        mysql -u $SqlRoot -p$SqlRootPwd -h $SqlHost < "$MailWatchTmpDir/create.sql"
-        mysql -u $SqlRoot -p$SqlRootPwd -h $SqlHost --execute="GRANT ALL ON $SqlDb.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
+        mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" < "$MailWatchTmpDir/create.sql"
+        mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" --execute="GRANT ALL ON $SqlDb.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
         SqlRootPwd=
 
         ask "Enter an admin user for the MailWatch web interface: " MWAdmin
-        ask "Enter password for the admin: " MWAdminPwd
+        ask "Enter password for the admin: " MWAdminPwd "pw"
         logprint "Create MailWatch web gui admin"
-        mysql -u $SqlUser -p$SqlPwd -h $SqlHost $SqlDb --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
+        mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
     else
         echo "You have to create the database yourself!"
         EndNotice="$EndNotice \n * create the database, a sql user with access to the db and following properties user: $SqlUser; password: $SqlPwd; db: $SqlDb; host: $SqlHost"
