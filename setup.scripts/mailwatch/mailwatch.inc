@@ -260,16 +260,19 @@ function configure-cronjobs() {
     sed -i -e "s/q_days=.*/q_days=0/" /etc/MailScanner/defaults
 }
 
-function configure-sudo() {
+function prepare-sudo-install() {
     logprint ""
     if ! ( type "sudo" > /dev/null 2>&1 ) ; then
         ask "Some functions need sudo (eg. SpamAssasin Lint, MailScanner Lint). Do you want to install it? (y/n)[y]: " installSudo
-        if [ -z $installSudo ] || [ "$installSudo" == "y" ]; then
-            logprint "Installing sudo"
-            $PM install sudo
-        else
-            logprint "Not installing sudo."
-        fi
+    fi
+}
+
+function install-sudo() {
+    if [ -z $installSudo ] || [ "$installSudo" == "y" ]; then
+        logprint "Installing sudo"
+        $PM install sudo
+    else
+        logprint "Not installing sudo."
     fi
     if ! ( type "sudo" > /dev/null 2>&1 ) ; then
         logprint "Sudo is installed so we are configuring it for use with MailWatch"
