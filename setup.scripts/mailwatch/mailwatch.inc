@@ -52,11 +52,11 @@ function detectos() {
         OS="CentOS"
         PM="yum $packageConfirm"
         #find OS version
-        if rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 5; then
+        if [[ -n $(rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 5) ]]; then
             OSVersion="5"
-        elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 6; then
+        elif [[ -n $(rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 6) ]]; then
             OSVersion="6"
-        elif rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 7; then
+        elif [[ -n $(rpm -q --qf "%{VERSION}" $(rpm -q --whatprovides redhat-release) | grep 7) ]]; then
             OSVersion="7"
         fi
     elif [[ $(cat /etc/*release | grep ^NAME | grep Red) ]]; then
