@@ -3,13 +3,13 @@
 set +o history
 
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-MailScannerVersion="5.0.6-5"
+MailScannerVersion="5.0.7-1"
 
 TmpDir="/tmp/mailwatchinstall"
-#MailWatchVersion="v1.2.6"
-#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.6"
-MailWatchVersion="develop"
-MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-develop"
+#MailWatchVersion="v1.2.7"
+#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.7"
+MailWatchVersion="1.2"
+MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2"
 IsUpgrade=0
 
 EndNotice=""
