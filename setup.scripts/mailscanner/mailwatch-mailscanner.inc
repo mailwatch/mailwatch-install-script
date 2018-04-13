@@ -25,7 +25,7 @@ function prepare-mailscanner() {
             logprint "Couldn't detect old MTA from MailScanner conf files"
             exit 1
         else
-            MTA=$oldMTA
+            MTA="$oldMTA"
         fi
     fi
 
@@ -70,7 +70,7 @@ function install-mailscanner() {
     fi
 
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
-    if [ -z $installMailScanner ] || [ "$installMailScanner" == "y" ]; then
+    if [ -z "$installMailScanner" ] || [ "$installMailScanner" == "y" ]; then
         logprint "Starting MailScanner install"
         mkdir -p "$MailScannerTmpDir/"
         logprint "Downloading current MailScanner release $MailScannerVersion:"
@@ -97,6 +97,7 @@ function install-mailscanner() {
 
     install-fixlatin
     install-digestsha1
+    install-dbdmysql
 }
 
 function install-fixlatin() {
@@ -116,6 +117,22 @@ function install-digestsha1() {
     else
         echo "Digest::SHA1 not installed. Installing it now."
         cpan -i Digest::SHA1
+    fi
+}
+
+function install-dbdmysql() {
+    perl -MDBD::mysql -e 1 &> /dev/null
+    if [ "$?" == "0" ]; then
+        echo "DBD::MySQL already installed"
+    else
+        echo "DBD::MySQL not installed. Installing it now."
+        if [[ "$PM" == "apt"* ]]; then
+             $PM install libdbd-mysql-perl
+        elif [[ "$PM" == "yum"* ]]; then
+             $PM install perl-DBD-MySQL
+        else
+            cpan -i Digest::SHA1
+        fi
     fi
 }
 
