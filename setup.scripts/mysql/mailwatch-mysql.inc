@@ -16,8 +16,10 @@ function prepare-mysql-install() {
     else
         mysqlInstalled="1"
         logprint "Found installed mysql server and will use that"
-        ask "Root sql user (with rights to create db)[root]: " SqlRoot
-        ask "Password for root sql user: (Input is not shown)" SqlRootPwd "pw"
+        if [ "$IsUpgrade" != "1" ]; then
+            ask "Root sql user (with rights to create db)[root]: " SqlRoot
+            ask "Password for root sql user: (Input is not shown)" SqlRootPwd "pw"
+        fi
     fi
     if [ -z "$SqlRoot" ]; then
         SqlRoot="root"
@@ -27,11 +29,11 @@ function prepare-mysql-install() {
 
 function install-mysql() {
     ############ Configure mysql server ################
-    if [ "$mysqlInstalled" != "1" ] && ([ -z $installMariadb ] || [ $installMariadb == "y" ]); then
+    if [ "$mysqlInstalled" != "1" ] && ([ -z "$installMariadb" ] || [ "$installMariadb" == "y" ]); then
         logprint "Start install of mariadb"
-        if [ $OS == "CentOS" ] ; then
+        if [ "$OS" == "CentOS" ] ; then
             logprint "Adding MariaDB 10.1 Repo"
-            cat $InstallFilesFolder/yum.repo/$OS-$OSVersion-MariaDB.$ARCH.repo > /etc/yum.repos.d/MariaDB.repo
+            cat "$InstallFilesFolder/yum.repo/$OS-$OSVersion-MariaDB.$ARCH.repo" > /etc/yum.repos.d/MariaDB.repo
             $PM clean all
             $PM install mariadb-server
             #TODO::Check for other rpm variants

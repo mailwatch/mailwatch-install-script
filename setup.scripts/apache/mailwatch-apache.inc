@@ -11,7 +11,7 @@ function install-webserver {
         apacheBin="httpd"
     else
         logprint "Installing apache"
-        if [ "$PM" == "yum" ]; then
+        if [[ "$PM" == "yum"* ]]; then
             $PM install httpd mod_ssl
             apacheBin="httpd"
         else
@@ -26,12 +26,12 @@ function install-webserver {
     fi
 
     if [ "$apacheBin" == "httpd" ]; then
-        mwApacheConf="/etc/httpd/conf.d/mailwatch.conf
+        mwApacheConf="/etc/httpd/conf.d/mailwatch.conf"
     elif [ "$apachebin" == "apache2" ]; then
-        #backup old config
-        mwApacheConf="/etc/apache2/sites-available/mailwatch.conf
+        mwApacheConf="/etc/apache2/sites-available/mailwatch.conf"
     fi
 
+    #backup old config
     if [ -f "$mwApacheConf" ]; then
         mv "$mwApacheConf" "$mwApacheConf.old"
     fi
@@ -39,11 +39,11 @@ function install-webserver {
 #    cp "$InstallFilesFolder/setup.scripts/apache/etc/apache2/conf-available/mailwatch.conf" /etc/apache2/conf-available/mailwatch.conf
     cp "$InstallFilesFolder/setup.scripts/apache/etc/apache2/sites-available/mailwatch.conf" "$mwApacheConf"
 
-#    if [[ -n $($apacheBin -v | grep "/2.4.") ]]; then
-#        sed -i -e "s/ALLGRANTED/Require all granted/" "/etc/apache2/conf-available/mailwatch.conf"
-#    else
-#        sed -i -e "s/ALLGRANTED/Order allow,deny\n  Allow from all/" "/etc/apache2/conf-available/mailwatch.conf"
-#    fi
+    if [[ -n $($apacheBin -v | grep "/2.4.") ]]; then
+        sed -i -e "s/ALLGRANTED/Require all granted/" "$mwApacheConf"
+    else
+        sed -i -e "s/ALLGRANTED/Order allow,deny\n  Allow from all/" "$mwApacheConf"
+    fi
     sed -i -e "s~WEBFOLDER~$WebFolder~" "$mwApacheConf"
 
     if [ "$apacheBin" == "apache2" ]; then
