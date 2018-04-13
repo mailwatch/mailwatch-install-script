@@ -1,5 +1,5 @@
 #!/bin/bash
-# Bash Menu Script Example
+# MWIS Version 1.0
 set +o history
 
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -20,11 +20,13 @@ source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
 source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
 source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
 
-if [ -d $TmpDir ]; then
+if [ -d "$TmpDir" ]; then
     logprint "Warning: temporary directory from previous install found."
     logprint "This usally means that a previous install is still running or was interrupted."
     logprint "In case of an upgrade you should make sure that your old conf.php and skin.css are still"
     logprint "in the web folder or backup the ones from the temporary folder $TmpDir before continuing."
+else
+    mkdir -p "$TmpDir"
 fi
 
 detectos
@@ -37,7 +39,7 @@ fi
 
 if ! ( type "tar" > /dev/null 2>&1 ) ; then
     logprint "Install script depends on tar."
-       $PM install tar
+    $PM install "tar"
     logprint ""
 fi
 
@@ -49,7 +51,7 @@ logprint ""
 
 ##ask directory for web files
 ask "In what location should MailWatch be installed (web files directory)?[/opt/mailwatch/public/]:" WebFolder
-if [ -z $WebFolder ]; then
+if [ -z "$WebFolder" ]; then
     WebFolder="/opt/mailwatch/public/"
 fi
 logprint ""
@@ -136,7 +138,7 @@ install-sudo
 logprint "Install finished!"
 
 logprint "Cleanup temporary data"
-rm -rf /tmp/mailwatchinstall/
+rm -rf "$TmpDir"
 resetVariables
 
 logprint ""

@@ -72,7 +72,7 @@ function install-mailscanner() {
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
     if [ -z $installMailScanner ] || [ "$installMailScanner" == "y" ]; then
         logprint "Starting MailScanner install"
-        mkdir -p /tmp/mailwatchinstall/mailscanner
+        mkdir -p "$MailScannerTmpDir/"
         logprint "Downloading current MailScanner release $MailScannerVersion:"
         wget -O "$MailScannerTmpDir/MailScanner.deb.tar.gz"  "$MailScannerDownloadPath"
         logprint "Extracting mailscanner files:"
