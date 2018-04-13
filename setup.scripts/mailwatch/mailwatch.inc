@@ -138,9 +138,9 @@ function download-mailwatch() {
 }
 
 function check-and-prepare-update() {
-    if [ -d $WebFolder ]; then
+    if [ -d "$WebFolder" ]; then
         ask "Folder $WebFolder already exists. Old files except config.php and skin.css will be removed.  Do you want to continue?(y/n)[n]: " overwriteWebFolder
-        if [ -z $overwriteWebFolder ] || [ "$overwriteWebFolder" == "n" ]; then
+        if [ -z "$overwriteWebFolder" ] || [ "$overwriteWebFolder" == "n" ]; then
             logprint "Stopping setup on user request"
             exit
         fi
@@ -148,14 +148,9 @@ function check-and-prepare-update() {
     else
         upgrading=n
     fi
-}
-
-function install-mailwatch() {
-    download-mailwatch
-    ################# Copy MailWatch files and set permissions ##################
-    if [ -z $upgrading ] || [ "$upgrading" == "y" ]; then
+    if [ -z "$upgrading" ] || [ "$upgrading" == "y" ]; then
+        IsUpgrade=1
         if [ -f "$WebFolder/conf.php" ]; then
-            IsUpgrade=1
             logprint "Saving old MailWatch config.php file"
             cp "$WebFolder/conf.php" "$TmpDir/mailwatch_conf.php.old"
         else
@@ -171,37 +166,42 @@ function install-mailwatch() {
     else
         logprint "No Upgrade. All existing content in the given folder will be overwritten"
     fi
-    if [ -z $WebFolder ]; then
-        rm -R $WebFolder
+}
+
+function install-mailwatch() {
+    download-mailwatch
+    ################# Copy MailWatch files and set permissions ##################
+    if [ -z "$WebFolder" ]; then
+        rm -R "$WebFolder"
         logprint "Clearing web files directory"
     fi
 
     #copy web files
     logprint "Moving MailWatch web files to new folder"
-    mkdir -p $WebFolder
-    cp -r "$MailWatchTmpDir"/mailscanner/* $WebFolder
+    mkdir -p "$WebFolder"
+    cp -r "$MailWatchTmpDir"/mailscanner/* "$WebFolder"
 }
 
 
 function configure-sqlcredentials() {
     logprint ""
-    if [ "$IsUpgrade" == 0 ]; then
+    if [ "$IsUpgrade" == "0" ]; then
         logprint "Setting up sql credentials"
         #get sql credentials
         ask "SQL user for mailwatch[mailwatch]:" SqlUser
-        if [ -z $SqlUser ]; then
+        if [ -z "$SqlUser" ]; then
             SqlUser="mailwatch"
         fi
         ask "SQL password for mailwatch[mailwatch]: (Input will not be shown)" SqlPwd "pw"
-        if [ -z $SqlPwd ]; then
+        if [ -z "$SqlPwd" ]; then
             SqlPwd="mailwatch"
         fi
         ask "SQL database for mailwatch[mailscanner]:" SqlDb
-        if [  -z $SqlDb ]; then
+        if [  -z "$SqlDb" ]; then
             SqlDb="mailscanner"
         fi
         ask "SQL host of database[localhost]:" SqlHost
-        if [ -z $SqlHost ]; then
+        if [ -z "$SqlHost" ]; then
             SqlHost="localhost"
         fi
         logprint "Using sql credentials user: $SqlUser; password: XXXXX; db: $SqlDb; host: $SqlHost"
@@ -215,22 +215,22 @@ function configure-sqlcredentials() {
 
 function configure-mailwatch() {
     logprint "Settings permissions for web directory"
-    chown root:"$Webuser" $WebFolder/temp
-    chmod g+rw $WebFolder/temp
+    chown root:"$Webuser" "$WebFolder/temp"
+    chmod g+rw "$WebFolder/temp"
 
     ###############apply general MailWatch settings #######################
     logprint "Apply MailWatch settings to conf.php"
     if [ "$IsUpgrade" == 0 ]; then
         cp "$WebFolder/conf.php.example" "$WebFolder/conf.php"
-        sed -i -e "s/^define('DB_USER', '.*')/define('DB_USER', '$SqlUser')/" $WebFolder/conf.php
-        sed -i -e "s/^define('DB_PASS', '.*')/define('DB_PASS', '$SqlPwd')/" $WebFolder/conf.php
-        sed -i -e "s/^define('DB_HOST', '.*')/define('DB_HOST', '$SqlHost')/" $WebFolder/conf.php
-        sed -i -e "s/^define('DB_NAME', '.*')/define('DB_NAME', '$SqlDb')/" $WebFolder/conf.php
-        sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
+        sed -i -e "s/^define('DB_USER', '.*')/define('DB_USER', '$SqlUser')/" "$WebFolder/conf.php"
+        sed -i -e "s/^define('DB_PASS', '.*')/define('DB_PASS', '$SqlPwd')/" "$WebFolder/conf.php"
+        sed -i -e "s/^define('DB_HOST', '.*')/define('DB_HOST', '$SqlHost')/" "$WebFolder/conf.php"
+        sed -i -e "s/^define('DB_NAME', '.*')/define('DB_NAME', '$SqlDb')/" "$WebFolder/conf.php"
+        sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" "$WebFolder/conf.php"
    else
        logprint "Upgrading MailWatch conf and db"
        cp "$TmpDir/mailwatch_conf.php.old" "$WebFolder/conf.php"
-       sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" $WebFolder/conf.php
+       sed -i -e "s~^define('MAILWATCH_HOME', '.*')~define('MAILWATCH_HOME', '$WebFolder')~" "$WebFolder/conf.php"
        "$MailWatchTmpDir/upgrade.php" --skip-user-confirm "$WebFolder/functions.php"
        if [ -f "$TmpDir/mailwatch_skin.css.old" ]; then
            logprint "Restoring old skin.css file"
@@ -240,22 +240,22 @@ function configure-mailwatch() {
 }
 
 function configure-cronjobs() {
-    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
-    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
-    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
-    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" $MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php
-    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php
-    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php
-    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php
-    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php
-    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch
-    chmod +x $MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly
-    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php /usr/local/bin/mailwatch_quarantine_maint.php
-    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php /usr/local/bin/mailwatch_quarantine_report.php
-    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php /usr/local/bin/mailwatch_db_clean.php
-    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php /usr/local/bin/mailwatch_geoip_update.php
-    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch /etc/cron.daily/mailwatch
-    cp $MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly /etc/cron.monthly/mailwatch
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php"
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php"
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php"
+    sed -i -e "s+^\$pathToFunctions = '.*';+\$pathToFunctions = '$WebFolder/functions.php';+" "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php"
+    chmod +x "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php"
+    chmod +x "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php"
+    chmod +x "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php"
+    chmod +x "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php"
+    chmod +x "$MailWatchTmpDir/tools/Cron_jobs/mailwatch"
+    chmod +x "$MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly"
+    cp "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_maint.php" /usr/local/bin/mailwatch_quarantine_maint.php
+    cp "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_quarantine_report.php" /usr/local/bin/mailwatch_quarantine_report.php
+    cp "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_db_clean.php" /usr/local/bin/mailwatch_db_clean.php
+    cp "$MailWatchTmpDir/tools/Cron_jobs/mailwatch_geoip_update.php" /usr/local/bin/mailwatch_geoip_update.php
+    cp "$MailWatchTmpDir/tools/Cron_jobs/mailwatch" /etc/cron.daily/mailwatch
+    cp "$MailWatchTmpDir/tools/Cron_jobs/mailwatch.cron.monthly" /etc/cron.monthly/mailwatch
 
     sed -i -e "s/q_days=.*/q_days=0/" /etc/MailScanner/defaults
 }
@@ -268,7 +268,7 @@ function prepare-sudo-install() {
 }
 
 function install-sudo() {
-    if [ -z $installSudo ] || [ "$installSudo" == "y" ]; then
+    if [ -z "$installSudo" ] || [ "$installSudo" == "y" ]; then
         logprint "Installing sudo"
         $PM install sudo
     else
@@ -276,7 +276,7 @@ function install-sudo() {
     fi
     if ! ( type "sudo" > /dev/null 2>&1 ) ; then
         logprint "Sudo is installed so we are configuring it for use with MailWatch"
-        sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" $MailWatchTmpDir/tools/sudo/mailwatch
-        cp $MailWatchTmpDir/tools/sudo/mailwatch /etc/sudoers.d/mailwatch
+        sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" "$MailWatchTmpDir/tools/sudo/mailwatch"
+        cp "$MailWatchTmpDir/tools/sudo/mailwatch" /etc/sudoers.d/mailwatch
     fi
 }

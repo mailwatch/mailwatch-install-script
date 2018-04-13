@@ -19,7 +19,7 @@ function prepare-mysql-install() {
         ask "Root sql user (with rights to create db)[root]: " SqlRoot
         ask "Password for root sql user: (Input is not shown)" SqlRootPwd "pw"
     fi
-    if [ -z $SqlRoot ]; then
+    if [ -z "$SqlRoot" ]; then
         SqlRoot="root"
     fi
 
@@ -56,7 +56,7 @@ function install-mysql() {
                 cat <<EOF | mysql_secure_installation
 
 y
-$SqlRootPwd
+$SqlRoot
 $SqlRootPwd
 
 
