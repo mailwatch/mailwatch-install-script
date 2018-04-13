@@ -58,7 +58,8 @@ function prepare-php-install() {
             missingPhpRpcPackages=$(getMissingDebianPackages "php-xml")
         fi
     else
-        missingPhpCorePackages=$(getMissingRpmPackages "php" "php-mysqlnd" "php-curl")
+        #curl in php-common
+        missingPhpCorePackages=$(getMissingRpmPackages "php" "php-mysqlnd php-common")
         missingPhpLdapPackages=$(getMissingRpmPackages "php-ldap")
         missingPhpRpcPackages=$(getMissingRpmPackages "php-xml")
     fi
