@@ -27,7 +27,7 @@ function install-webserver {
 
     if [ "$apacheBin" == "httpd" ]; then
         mwApacheConf="/etc/httpd/conf.d/mailwatch.conf"
-    elif [ "$apachebin" == "apache2" ]; then
+    elif [ "$apacheBin" == "apache2" ]; then
         mwApacheConf="/etc/apache2/sites-available/mailwatch.conf"
     fi
 
