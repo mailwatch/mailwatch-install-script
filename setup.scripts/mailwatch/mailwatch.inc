@@ -185,7 +185,7 @@ function install-mailwatch() {
 
 function configure-sqlcredentials() {
     logprint ""
-    if [ "$IsUpgrade" == "0" ]; then
+    if [ "$IsUpgrade" != "1" ]; then
         logprint "Setting up sql credentials"
         #get sql credentials
         ask "SQL user for mailwatch[mailwatch]:" SqlUser
@@ -279,4 +279,18 @@ function install-sudo() {
         sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" "$MailWatchTmpDir/tools/sudo/mailwatch"
         cp "$MailWatchTmpDir/tools/sudo/mailwatch" /etc/sudoers.d/mailwatch
     fi
+}
+
+function restart-services() {
+    if ! [ -z "$WebServer" ]; then
+        if [ "$WebServer" == "apache" ]; then
+            logprint "Restarting apache"
+            systemctl restart "$apacheBin"
+        elif [ "$WebServer" == "nginx" ]; then
+            logprint "Restarting nginx"
+            systemctl restart nginx
+        fi
+    fi
+    logprint "Restarting MailScanner"
+    systemctl restart mailscanner
 }

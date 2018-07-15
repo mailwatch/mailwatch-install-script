@@ -31,41 +31,22 @@ function prepare-php-ldap() {
     fi
 }
 
-function prepare-php-rpc() {
-    logprint ""
-    if ! [ -z "$missingPhpRpcPackages" ]; then
-        ask "Do you want to use RPC for this server (requires php-xml)? (y/n)[y]: " installRpc
-        if [ -z "$installRpc" ] || [ "$installRpc" == "y" ]; then
-            logprint "Installing required php-xml package"
-            phpPackagesToInstall="$phpPackagesToInstall $missingPhpRpcPackages"
-        else
-            logprint "Not installing php-xml package. You have to install it manually to use RPC."
-        fi
-    else
-        logprint "Packages needed for RPC already installed"
-    fi
-}
-
 function prepare-php-install() {
     if [ "$OS" == "Debian" ]; then
         if [[ -z $(apt-cache search php | cut -d " " -f 1 | grep '^php$') ]]; then
             missingPhpCorePackages=$(getMissingDebianPackages "php5" "php5-mysqlnd" "php5-curl")
             missingPhpLdapPackages=$(getMissingDebianPackages "php5-ldap")
-            missingPhpRpcPackages=$(getMissingDebianPackages "php5-xml")
         else
-            missingPhpCorePackages=$(getMissingDebianPackages "php" "php-mysql" "php-curl" "php-mbstring")
+            missingPhpCorePackages=$(getMissingDebianPackages "php" "php-mysql" "php-curl" "php-mbstring" "php-xml")
             missingPhpLdapPackages=$(getMissingDebianPackages "php-ldap")
-            missingPhpRpcPackages=$(getMissingDebianPackages "php-xml")
         fi
     else
         #curl in php-common
-        missingPhpCorePackages=$(getMissingRpmPackages "php" "php-mysqlnd php-common")
+        missingPhpCorePackages=$(getMissingRpmPackages "php" "php-mysqlnd" "php-common" "php-xml")
         missingPhpLdapPackages=$(getMissingRpmPackages "php-ldap")
-        missingPhpRpcPackages=$(getMissingRpmPackages "php-xml")
     fi
     prepare-php-core
     prepare-php-ldap
-    prepare-php-rpc
 }
 
 function install-php() {
