@@ -4,7 +4,13 @@ set +o history
 
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch-setup-config.inc"
+source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
 source "$InstallFilesFolder/version.inc"
+source "$InstallFilesFolder/setup.scripts/spamassassin/mailwatch-spamassassin.inc"
+source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
+source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
+source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
 
 TmpDir="/tmp/mailwatchinstall"
 MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-${MailWatchVersion/v/}"
@@ -12,13 +18,6 @@ MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-${MailWatchVersion/v/}"
 IsUpgrade=0
 
 EndNotice=""
-
-source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch-setup-config.inc"
-source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
-source "$InstallFilesFolder/setup.scripts/spamassassin/mailwatch-spamassassin.inc"
-source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
-source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
-source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
 
 if [ -d "$TmpDir" ]; then
     logprint "Warning: temporary directory from previous install found."
