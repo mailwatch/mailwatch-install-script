@@ -4,6 +4,7 @@
 MailScannerTmpDir="$TmpDir/mailscanner/"
 
 function prepare-mailscanner() {
+    logprint ""
     if [ "$IsUpgrade" != "1" ]; then
         ask 'Which MTA do you want to use with MailWatch? (it should already be installed):
   MTAs: 1:postfix (default), 2:exim, 3:sendmail, 4: skip : ' useMta
