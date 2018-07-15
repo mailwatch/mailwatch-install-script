@@ -15,6 +15,7 @@ EndNotice=""
 
 source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch-setup-config.inc"
 source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
+source "$InstallFilesFolder/setup.scripts/spamassassin/mailwatch-spamassassin.inc"
 source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
 source "$InstallFilesFolder/setup.scripts/mysql/mailwatch-mysql.inc"
 source "$InstallFilesFolder/setup.scripts/php/mailwatch-php.inc"
@@ -75,6 +76,7 @@ fi
 check-and-prepare-update
 
 #also detects MTA
+prepare-spamassassin-install
 prepare-mailscanner
 prepare-webserver
 prepare-php-install
@@ -82,6 +84,7 @@ configure-sqlcredentials
 prepare-sudo-install
 prepare-mysql-install
 
+install-spamassassin
 install-mailscanner
 install-mailwatch
 
