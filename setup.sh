@@ -3,13 +3,12 @@
 set +o history
 
 InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-MailScannerVersion="5.0.7-2"
+
+source "$InstallFilesFolder/version.inc"
 
 TmpDir="/tmp/mailwatchinstall"
-MailWatchVersion="v1.2.8"
-MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2.8"
-#MailWatchVersion="1.2"
-#MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-1.2"
+MailWatchTmpDir="$TmpDir/mailwatch/MailWatch-${MailWatchVersion/v/}"
+
 IsUpgrade=0
 
 EndNotice=""
@@ -134,6 +133,8 @@ sleep 1
 configure-cronjobs
 configure-mailscanner
 install-sudo
+
+restart-services
 
 logprint "Install finished!"
 
