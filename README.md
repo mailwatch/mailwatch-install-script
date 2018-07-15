@@ -6,3 +6,6 @@ MailWatch for MailScanner is a web-based front-end to MailScanner written in PHP
 
 The MailWatch Install Script provides a convenient method to install MailWatch in a standard configuration across a variety of platforms.
 
+ * To start a full setup run setup.sh (includes database setup)
+ * To only configure the sql database run setup.scripts/mysql/mailwatch-mysql-database-setup.sh
+ * To change or create the admin user for the gui run setup.scripts/mailwatch/mailwatch-setup-admin.sh

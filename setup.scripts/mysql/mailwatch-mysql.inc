@@ -72,7 +72,10 @@ EOF
             fi
         fi
     fi
+    setup-database
+}
 
+function setup-database() {
     if [ "$IsUpgrade" == 1 ]; then
         logprint "Not creating sql db because we are running an upgrade"
     elif [ "$mysqlInstalled" == "1" ]; then
@@ -81,10 +84,7 @@ EOF
         mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" --execute="GRANT ALL ON $SqlDb.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
         SqlRootPwd=
 
-        ask "Enter an admin user for the MailWatch web interface: " MWAdmin
-        ask "Enter password for the admin: " MWAdminPwd "pw"
-        logprint "Create MailWatch web gui admin"
-        mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
+        setup-admin-user
     else
         echo "You have to create the database yourself!"
         EndNotice="$EndNotice \n * create the database, a sql user with access to the db and following properties user: $SqlUser; password: $SqlPwd; db: $SqlDb; host: $SqlHost"
@@ -92,3 +92,9 @@ EOF
     fi
 }
 
+function setup-admin-user() {
+        ask "Enter an admin user for the MailWatch web interface: " MWAdmin
+        ask "Enter password for the admin: " MWAdminPwd "pw"
+        logprint "Create MailWatch web gui admin"
+        mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
+}
