@@ -45,7 +45,7 @@ function install-spamassassin() {
 function install-bayesSql() {
     if [ "$installBayesSql" != "n" ]; then
         logprint "Configure Bayes-Sql"
-        mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" "$SqlDb" < "$InstallFilesFolder/setup.scripts/spamassassin/bayes_mysql.sql"
+        mysql -u "$SqlUser" -p"$SqlPass" -h "$SqlHost" "$SqlDb" < "$InstallFilesFolder/setup.scripts/spamassassin/bayes_mysql.sql"
 
         cat <<EOF >> /etc/MailScanner/spamassassin.conf
 bayes_store_module              Mail::SpamAssassin::BayesStore::MySQL
