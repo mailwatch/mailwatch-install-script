@@ -93,6 +93,7 @@ install-spamassassin
 install-mailscanner
 install-mailwatch
 install-mysql
+install-bayesSql
 
 ######################Configure web server ########################
 logprint ""

@@ -12,9 +12,13 @@ function prepare-spamassassin-install() {
     fi
 
     #test if bayes sql module is already configured
-    bayesSqlOptionExists=$(grep -e "^[[:space:]]*bayes_store_module[[:space:]]*Mail::SpamAssassin:BayesStore::MySQL")
+    if [ -f /etc/MailScanner/spamassassin.conf ]; then
+        bayesSqlOptionExists=$(grep -e "^[[:space:]]*bayes_store_module[[:space:]]*Mail::SpamAssassin:BayesStore::MySQL" /etc/MailScanner/spamassassin.conf)
+    else
+        bayesSqlOptionExists=""
+    fi
     if [ -z "$bayesSqlOptionExists" ]; then
-        ask "Do you want to use Bayes-Sql backend?[y]" useBayesSql
+        ask "Do you want to use Bayes-Sql backend (y/n)?[y]" useBayesSql
         if [ -z "$useBayesSql" ] || [ "$useBayesSql" == "y" ]; then
             logprint "Bayes-Sql is going to be installed"
             installBayesSql="y"
