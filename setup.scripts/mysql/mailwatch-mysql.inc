@@ -80,6 +80,10 @@ function setup-database() {
         logprint "Not creating sql db because we are running an upgrade"
     elif [ "$mysqlInstalled" == "1" ]; then
         logprint "Creating sql database and setting permission."
+        origDb="\`mailscanner\`"
+        newDb="\`$SqlDb\`"
+        sed -i -e "s/CREATE DATABASE IF NOT EXISTS $origDb DEFAULT /CREATE DATABASE IF NOT EXISTS $newDb DEFAULT /" "$MailWatchTmpDir/create.sql"
+        sed -i -e "s/USE $origDb;/USE $newDb/" "$MailWatchTmpDir/create.sql"
         mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" < "$MailWatchTmpDir/create.sql"
         mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" --execute="GRANT ALL ON $SqlDb.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
         SqlRootPwd=
