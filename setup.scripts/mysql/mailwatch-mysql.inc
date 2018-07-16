@@ -92,10 +92,11 @@ function setup-database() {
         newDb="\`$SqlDb\`"
         sed -i -e "s/CREATE DATABASE IF NOT EXISTS $origDb DEFAULT /CREATE DATABASE IF NOT EXISTS $newDb DEFAULT /" "$MailWatchTmpDir/create.sql"
         sed -i -e "s/USE $origDb;/USE $newDb/" "$MailWatchTmpDir/create.sql"
+        logprint "If no password has been set yet you may be asked to enter the root sql password twice"
         mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" < "$MailWatchTmpDir/create.sql"
         mysql -u "$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" --execute="GRANT ALL ON $SqlDb.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; GRANT FILE ON *.* TO \"$SqlUser\"@\"$SqlHost\" IDENTIFIED BY '$SqlPwd'; FLUSH PRIVILEGES"
         SqlRootPwd=
-
+        logprint "Sql database structure created"
         setup-admin-user
     else
         echo "You have to create the database yourself!"

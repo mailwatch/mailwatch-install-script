@@ -9,12 +9,14 @@ function ask() {
     message="$1"
     var="$2"
     if [ -z "${!var}" ]; then
+        echo -e "\e[44m"
         if [ -z "$3" ]; then
             read -r -p "$message" "$var"
         elif [ "$3" == "pw" ]; then
             read -r -s -p "$message" "$var"
             echo ""
         fi
+        echo -e "\e[0m"
     else
         logprint "$var set by setup-config. Using that value"
     fi
