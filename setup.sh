@@ -92,7 +92,6 @@ prepare-mysql-install
 install-spamassassin
 install-mailscanner
 install-mailwatch
-
 install-mysql
 
 ######################Configure web server ########################
@@ -121,6 +120,7 @@ fi
 
 install-php
 
+install-sudo
 configure-mailwatch
 
 #####################apply adjustments for MTAs ########################
@@ -140,7 +140,6 @@ sleep 1
 
 configure-cronjobs
 configure-mailscanner
-install-sudo
 
 restart-services
 
