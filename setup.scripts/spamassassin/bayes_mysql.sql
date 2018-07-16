@@ -17,6 +17,7 @@ CREATE TABLE bayes_seen (
   id int(11) NOT NULL default '0',
   msgid varchar(200) binary NOT NULL default '',
   flag char(1) NOT NULL default '',
+  lastupdate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY  (id,msgid)
 ) ENGINE=InnoDB;
 
@@ -41,6 +42,7 @@ CREATE TABLE bayes_vars (
   last_expire_reduce int(11) NOT NULL default '0',
   oldest_token_age int(11) NOT NULL default '2147483647',
   newest_token_age int(11) NOT NULL default '0',
+  lastupdate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   PRIMARY KEY  (id),
   UNIQUE bayes_vars_idx1 (username)
 ) ENGINE=InnoDB;
