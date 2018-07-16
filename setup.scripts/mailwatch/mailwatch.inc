@@ -274,9 +274,9 @@ function install-sudo() {
     else
         logprint "Not installing sudo."
     fi
-    if ! ( type "sudo" > /dev/null 2>&1 ) ; then
+    if ( type "sudo" > /dev/null 2>&1 ) ; then
         logprint "Sudo is installed so we are configuring it for use with MailWatch"
-        sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser" "$MailWatchTmpDir/tools/sudo/mailwatch"
+        sed -i -e "s/User_Alias MAILSCANNER = .*/User_Alias MAILSCANNER = $Webuser/" "$MailWatchTmpDir/tools/sudo/mailwatch"
         cp "$MailWatchTmpDir/tools/sudo/mailwatch" /etc/sudoers.d/mailwatch
     fi
 }
