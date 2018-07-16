@@ -115,4 +115,12 @@ if [[ -z $(grep -r "clamav: root" /etc/aliases) ]]; then
     echo "clamav: root" >> /etc/aliases
 fi
 
+if [ -f /etc/sudoers.d/mailwatch ]; then
+    sed -i -e "s~#Cmnd_Alias EXIM_QUEUE_IN = /usr/sbin/exim -bpc~Cmnd_Alias EXIM_QUEUE_IN = /usr/sbin/exim -bpc~"
+    sed -i -e "s~#Cmnd_Alias EXIM_QUEUE_OUT = /usr/sbin/exim -bpc -DOUTGOING~Cmnd_Alias EXIM_QUEUE_OUT = /usr/sbin/exim -bpc -DOUTGOING~"
+    sed -i -e "s~#Cmnd_Alias SENDMAIL_QUEUE_IN = /usr/bin/mailq -bp -OQueueDirectory=/var/spool/mqueue.in~Cmnd_Alias SENDMAIL_QUEUE_IN = /usr/bin/mailq -bp -OQueueDirectory=/var/spool/mqueue.in~"
+    sed -i -e "s~#Cmnd_Alias SENDMAIL_QUEUE_OUT = /usr/bin/mailq -bp~Cmnd_Alias SENDMAIL_QUEUE_OUT = /usr/bin/mailq -bp~"
+    sed -i -e "s~#MAILSCANNER ALL= NOPASSWD: MAILSCANLINT, SPAMASSASSINLINT, EXIM_QUEUE_IN, EXIM_QUEUE_OUT, SENDMAIL_QUEUE_IN, SENDMAIL_QUEUE_OUT~MAILSCANNER ALL= NOPASSWD: MAILSCANLINT, SPAMASSASSINLINT, EXIM_QUEUE_IN, EXIM_QUEUE_OUT, SENDMAIL_QUEUE_IN, SENDMAIL_QUEUE_OUT~"
+fi
+
 service "$Service" start
