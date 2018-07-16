@@ -29,7 +29,7 @@ function install-webserver {
     if [ "$apacheBin" == "httpd" ]; then
         mwApacheConf="/etc/httpd/conf.d/ssl_mailwatch.conf"
     elif [ "$apacheBin" == "apache2" ]; then
-        mwApacheConf="/etc/apache2/sites-available/ssl_mailwatch.conf"
+        mwApacheConf="/etc/apache2/sites-available/mailwatch-ssl.conf"
     fi
 
     logprint "Using apache conf file $mwApacheConf"
