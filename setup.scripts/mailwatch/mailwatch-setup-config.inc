@@ -58,6 +58,9 @@ installSudo=
 #confirm each installation of packages done with the package manager (y/n). Default is n.
 confirmPackageInstalls=
 
+#use bayes-sql backend (y/n). Default is y.
+useBayesSql=
+
 function resetVariables() {
     installMailScanner=
     WebFolder=
@@ -81,4 +84,5 @@ function resetVariables() {
     MWAdminPwd=
     confirmPackageInstalls=
     EndNotice=
+    useBayesSql=
 }

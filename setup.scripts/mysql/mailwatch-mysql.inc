@@ -4,7 +4,7 @@
 function prepare-mysql-install() {
     if ! ( type "mysqld" > /dev/null 2>&1 ) ; then
         ask "No mysql server found. Do you want to install mariadb as sql server?(y/n)[y]: " installMariadb
-        if [ -z $installMariadb ] || [ $installMariadb == "y" ]; then
+        if [ -z "$installMariadb" ] || [ "$installMariadb" == "y" ]; then
             logprint "MariaDB will be installed"
             ask "Password that should be set for the database root user: (Input is not shown)" SqlRootPwd "pw"
         else
