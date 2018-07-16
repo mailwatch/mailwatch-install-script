@@ -46,6 +46,9 @@ function install-mysql() {
             logprint "MariaDB installation failed - You will have to install manually"
             mysqlInstalled="0"
         else
+            logprint "Starting MySql server"
+            systemctl start mysql
+            sleep 2
             mysqlInstalled="1"
             logprint "MariaDB installed - now we need to secure the installation"
             logprint "Please enter the required details in the next step - for security, please enter a password"
@@ -79,6 +82,11 @@ function setup-database() {
     if [ "$IsUpgrade" == 1 ]; then
         logprint "Not creating sql db because we are running an upgrade"
     elif [ "$mysqlInstalled" == "1" ]; then
+        $(mysql -u"$SqlRoot" -p"$SqlRootPwd" -h "$SqlHost" -e 'SHOW VARIABLES WHERE 0')
+        if [ "$?" != "0" ]; then
+            logprint "Can't connect to sql server"
+            exit 1
+        fi
         logprint "Creating sql database and setting permission."
         origDb="\`mailscanner\`"
         newDb="\`$SqlDb\`"
@@ -101,4 +109,7 @@ function setup-admin-user() {
         ask "Enter password for the admin: " MWAdminPwd "pw"
         logprint "Create MailWatch web gui admin"
         mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
+        if [ "$?" != "0" ]; then
+            logprint "Failed to create admin user."
+        fi
 }

@@ -17,7 +17,6 @@ CREATE TABLE bayes_seen (
   id int(11) NOT NULL default '0',
   msgid varchar(200) binary NOT NULL default '',
   flag char(1) NOT NULL default '',
-  lastupdate timestamp(14) NOT NULL,
   PRIMARY KEY  (id,msgid)
 ) ENGINE=InnoDB;
 
