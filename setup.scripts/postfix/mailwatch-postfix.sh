@@ -26,3 +26,8 @@ chmod -R g+r /var/spool/postfix/{hold,incoming}
 
 # restart again to notice new permissions
 service postfix start
+
+if [ -f /etc/sudoers.d/mailwatch ]; then
+    sed -i -e "s~^#Cmnd_Alias POSTFIX_QUEUE~Cmnd_Alias POSTFIX_QUEUE~" /etc/sudoers.d/mailwatch
+    sed -i -e "s~^#MAILSCANNER ALL= NOPASSWD: MAILSCANLINT, SPAMASSASSINLINT, POSTFIX_QUEUE~MAILSCANNER ALL= NOPASSWD: MAILSCANLINT, SPAMASSASSINLINT, POSTFIX_QUEUE~" /etc/sudoers.d/mailwatch
+fi
