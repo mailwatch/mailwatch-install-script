@@ -10,3 +10,5 @@
 
 #mailscanner install log
 mailscanner-install.log
+
+*.swp
