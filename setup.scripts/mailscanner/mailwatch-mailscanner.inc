@@ -63,6 +63,10 @@ function prepare-mailscanner() {
 }
 
 function install-mailscanner() {
+    install-fixlatin
+    install-digestsha1
+    install-dbdmysql
+
     logprint ""
     if [[ "$PM" == "yum"* ]]; then
         MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
@@ -86,6 +90,8 @@ function install-mailscanner() {
             exit 1
         fi
 
+        cp "$InstallFilesFolder/setup.scripts/mailscanner/00_mw-install-script.conf" /etc/MailScanner/conf.d/00_mw-install-script.conf
+
         logprint "MailScanner install finished."
         EndNotice="$EndNotice \n * Adjust MailScanner config by creating an adjusted config file in /etc/MailScanner/conf.d/ \n * Set run_mailscanner=1 in /etc/MailScanner/defaults"
         sleep 1
@@ -95,10 +101,6 @@ function install-mailscanner() {
 
     logprint "Stopping mailscanner"
     service mailscanner stop
-
-    install-fixlatin
-    install-digestsha1
-    install-dbdmysql
 }
 
 function install-fixlatin() {
