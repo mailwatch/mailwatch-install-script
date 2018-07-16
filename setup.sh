@@ -61,17 +61,23 @@ logprint "At which hostname should MailWatch be reachable once installed? \n\
     enter the full path here (including 'https://' or 'http://' and configure the web server manually. \n\
     Examples can be found in the sub folders below the setup script."
 ask "Enter hostname/URI [$(hostname -f)]: " mwURI
-#todo use in scripts
-if [[ "$msURI" =~ ^(?!http[s]?://)[^/]*/ ]]; then
+if [ -z "$mwURI" ]; then
+    mwURI="$(hostname -f)"
+fi
+if [[ "$mwURI" =~ ^(?!http[s]?://)[^/]*/ ]]; then
     #uri does not contain http[s] at beginning but still contains a "/" somewhere
     logprint "You have to either provide the full URI (including http[s]://..) or only the hostname"
     exit 1
-elif ! [[ "$mwURI" =~ ^http[s]?://.+ ]]; then
+elif [[ "$mwURI" =~ ^http[s]?://([^/]+)(/.*)? ]]; then
     #uri in url format (start with http[s]:// and then any other characters
-    uriIsHostname="y"
-else
     uriIsHostname="n"
+    mwHost="${BASH_REMATCH[1]}"
+else
+    uriIsHostname="y"
+    mwHost="$mwURI"
 fi
+logprint "Hostname is $mwHost"
+
 check-and-prepare-update
 
 #also detects MTA

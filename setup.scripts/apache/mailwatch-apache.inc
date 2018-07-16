@@ -24,12 +24,15 @@ function install-webserver {
             apacheBin="apache2"
         fi
     fi
+    logprint "Apache binary is $apacheBin"
 
     if [ "$apacheBin" == "httpd" ]; then
-        mwApacheConf="/etc/httpd/conf.d/mailwatch.conf"
+        mwApacheConf="/etc/httpd/conf.d/ssl_mailwatch.conf"
     elif [ "$apacheBin" == "apache2" ]; then
-        mwApacheConf="/etc/apache2/sites-available/mailwatch.conf"
+        mwApacheConf="/etc/apache2/sites-available/ssl_mailwatch.conf"
     fi
+
+    logprint "Using apache conf file $mwApacheConf"
 
     #backup old config
     if [ -f "$mwApacheConf" ]; then
@@ -37,13 +40,18 @@ function install-webserver {
     fi
 
 #    cp "$InstallFilesFolder/setup.scripts/apache/etc/apache2/conf-available/mailwatch.conf" /etc/apache2/conf-available/mailwatch.conf
-    cp "$InstallFilesFolder/setup.scripts/apache/etc/apache2/sites-available/mailwatch.conf" "$mwApacheConf"
+    cp "$InstallFilesFolder/setup.scripts/apache/etc/apache2/sites-available/ssl_mailwatch.conf" "$mwApacheConf"
 
-    if [[ -n $($apacheBin -v | grep "/2.4.") ]]; then
+    logprint "Patching apache conf file"
+
+    if [[ -n $("$apacheBin" -v | grep "/2.4.") ]]; then
         sed -i -e "s/ALLGRANTED/Require all granted/" "$mwApacheConf"
     else
         sed -i -e "s/ALLGRANTED/Order allow,deny\n  Allow from all/" "$mwApacheConf"
     fi
+
+    escapedHostname="${mwHost/\./\\\.}"
+    sed -i -e "s~MWHOSTNAME~$escapedHostname~" "$mwApacheConf"
     sed -i -e "s~WEBFOLDER~$WebFolder~" "$mwApacheConf"
 
     if [ "$apacheBin" == "apache2" ]; then
