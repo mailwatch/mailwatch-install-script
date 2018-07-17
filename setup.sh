@@ -6,6 +6,8 @@ InstallFilesFolder=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch-setup-config.inc"
 source "$InstallFilesFolder/setup.scripts/mailwatch/mailwatch.inc"
+logprint "\e[0mRequesting current program versions ..."
+
 source "$InstallFilesFolder/version.inc"
 source "$InstallFilesFolder/setup.scripts/spamassassin/mailwatch-spamassassin.inc"
 source "$InstallFilesFolder/setup.scripts/mailscanner/mailwatch-mailscanner.inc"
