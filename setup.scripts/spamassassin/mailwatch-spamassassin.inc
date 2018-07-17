@@ -13,7 +13,7 @@ function prepare-spamassassin-install() {
 
     #test if bayes sql module is already configured
     if [ -f /etc/MailScanner/spamassassin.conf ]; then
-        bayesSqlOptionExists=$(grep -e "^[[:space:]]*bayes_store_module[[:space:]]*Mail::SpamAssassin:BayesStore::MySQL" /etc/MailScanner/spamassassin.conf)
+        bayesSqlOptionExists=$(grep -e "^[[:space:]]*bayes_store_module[[:space:]]*Mail::SpamAssassin::BayesStore::MySQL" /etc/MailScanner/spamassassin.conf)
     else
         bayesSqlOptionExists=""
     fi
@@ -45,13 +45,13 @@ function install-spamassassin() {
 function install-bayesSql() {
     if [ "$installBayesSql" != "n" ]; then
         logprint "Configure Bayes-Sql"
-        mysql -u "$SqlUser" -p"$SqlPass" -h "$SqlHost" "$SqlDb" < "$InstallFilesFolder/setup.scripts/spamassassin/bayes_mysql.sql"
+        mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" < "$InstallFilesFolder/setup.scripts/spamassassin/bayes_mysql.sql"
 
         cat <<EOF >> /etc/MailScanner/spamassassin.conf
 bayes_store_module              Mail::SpamAssassin::BayesStore::MySQL
 bayes_sql_dsn                   DBI:mysql:$SqlDb:$SqlHost
 bayes_sql_username              $SqlUser
-bayes_sql_password              $SqlPass
+bayes_sql_password              $SqlPwd
 bayes_sql_override_username     $SqlUser
 EOF
     fi
