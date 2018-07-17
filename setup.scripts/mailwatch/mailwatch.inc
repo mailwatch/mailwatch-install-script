@@ -217,7 +217,7 @@ function configure-sqlcredentials() {
 
 function configure-mailwatch() {
     logprint "Settings permissions for web directory"
-    chown root:"$Webuser" "$WebFolder/temp"
+    chown "$Webuser":"$Webuser" "$WebFolder/temp"
     chmod g+rw "$WebFolder/temp"
 
     ###############apply general MailWatch settings #######################
