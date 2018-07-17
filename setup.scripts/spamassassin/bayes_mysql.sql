@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `bayes_seen` (
 
 CREATE TABLE IF NOT EXISTS `bayes_token` (
   `id` int(11) NOT NULL DEFAULT '0',
-  `token` char(5) NOT NULL DEFAULT '',
+  `token` binary(5) NOT NULL DEFAULT '',
   `spam_count` int(11) NOT NULL DEFAULT '0',
   `ham_count` int(11) NOT NULL DEFAULT '0',
   `atime` int(11) NOT NULL DEFAULT '0'
