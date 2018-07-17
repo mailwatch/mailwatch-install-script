@@ -96,6 +96,7 @@ install-mailscanner
 install-mailwatch
 install-mysql
 install-bayesSql
+install-bayesAwl
 
 ######################Configure web server ########################
 logprint ""
