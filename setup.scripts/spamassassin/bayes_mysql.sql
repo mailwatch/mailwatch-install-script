@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS `bayes_expire` (
   `id` int(11) NOT NULL DEFAULT '0',
   `runtime` int(11) NOT NULL DEFAULT '0'
@@ -24,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `bayes_token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `bayes_vars` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `username` varchar(200) NOT NULL DEFAULT '',
   `spam_count` int(11) NOT NULL DEFAULT '0',
   `ham_count` int(11) NOT NULL DEFAULT '0',
@@ -50,5 +51,8 @@ ALTER TABLE `bayes_token`
 
 ALTER TABLE `bayes_vars`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `bayes_vars_idx1` (`username`);
+
+ALTER TABLE `bayes_vars`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 INSERT INTO bayes_global_vars VALUES ('VERSION','3');
