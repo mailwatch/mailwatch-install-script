@@ -106,9 +106,12 @@ function setup-database() {
 }
 
 function setup-admin-user() {
-        ask "Enter an admin user for the MailWatch web interface: " MWAdmin
+        ask "Enter an admin user for the MailWatch web interface [admin]:" MWAdmin
         ask "Enter password for the admin: " MWAdminPwd "pw"
         logprint "Create MailWatch web gui admin"
+        if [ -z "$MWAdmin" ]; then
+            MWAdmin="admin"
+        fi
         mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" --execute="REPLACE INTO users SET username = '$MWAdmin', password = MD5('$MWAdminPwd'), fullname = 'Admin', type = 'A';"
         if [ "$?" != "0" ]; then
             logprint "Failed to create admin user."
