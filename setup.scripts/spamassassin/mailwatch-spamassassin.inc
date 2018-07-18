@@ -83,6 +83,7 @@ function install-bayesAwl() {
         mysql -u "$SqlUser" -p"$SqlPwd" -h "$SqlHost" "$SqlDb" < "$InstallFilesFolder/setup.scripts/spamassassin/awl_mysql.sql"
 
         cat <<EOF >> /etc/MailScanner/spamassassin.conf
+loadplugin                      Mail::SpamAssassin::Plugin::AWL
 auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList
 user_awl_dsn                    DBI:mysql:$SqlDb:$SqlHost
 user_awl_username               $SqlUser
