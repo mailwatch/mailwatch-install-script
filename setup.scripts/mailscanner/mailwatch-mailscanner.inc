@@ -91,7 +91,17 @@ function install-mailscanner() {
         fi
 
         cp "$InstallFilesFolder/setup.scripts/mailscanner/00_mw-install-script.conf" /etc/MailScanner/conf.d/00_mw-install-script.conf
-
+        if [ "$useClamav" == "y" ]; then
+            if [ "$OS" == "Debian" ]; then
+                $PM install clamav-daemon
+                systemctl enable clamav-daemon.service
+                systemctl start clamav-daemon.service
+            elif [ "$OS" == "CentOS" ]; then
+                $PM install clamd
+                systemctl enable clam.scan.service
+                systemctl start clam.scan.service
+            fi
+        fi
         logprint "MailScanner install finished."
         EndNotice="$EndNotice \n * Adjust MailScanner config by creating an adjusted config file in /etc/MailScanner/conf.d/ \n * Set run_mailscanner=1 in /etc/MailScanner/defaults"
         sleep 1
