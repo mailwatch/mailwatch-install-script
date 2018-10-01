@@ -9,7 +9,7 @@ else
     logprint "Current MailScanner version is $MailScannerVersion"
 fi
 
-MailWatchVersion=$(wget https://github.com/mailwatch/mailwatch/releases -q -O - | grep '<span class="css-truncate-target">' | grep -vi 'rc' | head -n1 | cut -d'>' -f2 | cut -d'<' -f1)
+MailWatchVersion=$(wget https://github.com/mailwatch/mailwatch/releases -q -O - | grep '<span class="css-truncate-target"' | grep -vi 'rc' | head -n1 | cut -d'>' -f2 | cut -d'<' -f1)
 #1.2 stable release
 #MailWatchVersion="v1.2.9"
 #1.2 dev branch
