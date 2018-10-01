@@ -1,0 +1,14 @@
+#directories
+/mailscanner/images/cache/*
+
+#files
+/mailscanner/conf.php
+
+#development files
+/_msconfig/
+/vendor/
+
+#mailscanner install log
+mailscanner-install.log
+
+*.swp
