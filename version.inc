@@ -9,9 +9,9 @@ else
     logprint "Current MailScanner version is $MailScannerVersion"
 fi
 
-MailWatchVersion=$(wget https://github.com/mailwatch/mailwatch/releases -q -O - | grep '<span class="css-truncate-target"' | grep -vi 'rc' | head -n1 | cut -d'>' -f2 | cut -d'<' -f1)
+MailWatchVersion=$(wget "https://api.github.com/repos/mailwatch/mailwatch/releases/latest" -q -O - | grep "tag_name" | cut -d ":" -f2 | cut -d "\"" -f2)
 #1.2 stable release
-#MailWatchVersion="v1.2.9"
+#MailWatchVersion="v1.2.10"
 #1.2 dev branch
 #MailWatchVersion="1.2"
 
@@ -21,5 +21,3 @@ if [ "$?" != "0" ]; then
 else
     logprint "Current MailWatch version is $MailWatchVersion"
 fi
-
-
