@@ -69,9 +69,9 @@ function install-mailscanner() {
 
     logprint ""
     if [[ "$PM" == "yum"* ]]; then
-        MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.rhel.tar.gz"
+        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.rhel.tar.gz"
     elif [[ "$PM" == "apt-get"* ]]; then
-        MailScannerDownloadPath="https://s3.amazonaws.com/msv5/release/MailScanner-$MailScannerVersion.deb.tar.gz"
+        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.deb.tar.gz"
     fi
 
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
