@@ -86,8 +86,8 @@ function install-bayesAwl() {
 loadplugin                      Mail::SpamAssassin::Plugin::AWL
 auto_whitelist_factory          Mail::SpamAssassin::SQLBasedAddrList
 user_awl_dsn                    DBI:mysql:$SqlDb:$SqlHost
-user_awl_username               $SqlUser
-user_awl_password               $SqlPwd
+user_awl_sql_username           $SqlUser
+user_awl_sql_password           $SqlPwd
 EOF
     fi
 }
