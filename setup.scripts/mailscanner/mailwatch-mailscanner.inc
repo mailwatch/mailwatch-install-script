@@ -69,9 +69,11 @@ function install-mailscanner() {
 
     logprint ""
     if [[ "$PM" == "yum"* ]]; then
-        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.rhel.noarch.rpm"
+        MailScannerPkg="MailScanner-$MailScannerVersion.rhel.noarch.rpm"
+        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/$MailScannerPkg"
     elif [[ "$PM" == "apt-get"* ]]; then
-        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.noarch.deb"
+        MailScannerPkg="MailScanner-$MailScannerVersion.noarch.deb"
+        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/$MailScannerPkg"
     fi
 
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
@@ -79,12 +81,12 @@ function install-mailscanner() {
         logprint "Starting MailScanner install"
         mkdir -p "$MailScannerTmpDir/"
         logprint "Downloading current MailScanner release $MailScannerVersion:"
-        wget "$MailScannerDownloadPath"
+        wget -O "$MailScannerTmpDir/$MailScannerPkg" "$MailScannerDownloadPath"
         logprint "Installing package:"
         if [[ "$PM" == "yum"* ]]; then
-            rpm -ivh MailScanner-$MailScannerVersion.rhel.noarch.rpm
+            rpm -ivh $MailScannerTmpDir/$MailScannerPkg
         elif [[ "$PM" == "apt-get"* ]]; then
-            dpkg -i MailScanner-$MailScannerVersionn.noarch.deb
+            dpkg -i $MailScannerTmpDir/$MailScannerPkg
         fi
         logprint "Starting MailScanner install script"
 
