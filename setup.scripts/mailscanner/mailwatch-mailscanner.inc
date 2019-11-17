@@ -69,9 +69,9 @@ function install-mailscanner() {
 
     logprint ""
     if [[ "$PM" == "yum"* ]]; then
-        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.rhel.tar.gz"
+        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.rhel.noarch.rpm"
     elif [[ "$PM" == "apt-get"* ]]; then
-        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.deb.tar.gz"
+        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/MailScanner-$MailScannerVersion.noarch.deb"
     fi
 
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
@@ -79,12 +79,16 @@ function install-mailscanner() {
         logprint "Starting MailScanner install"
         mkdir -p "$MailScannerTmpDir/"
         logprint "Downloading current MailScanner release $MailScannerVersion:"
-        wget -O "$MailScannerTmpDir/MailScanner.deb.tar.gz"  "$MailScannerDownloadPath"
-        logprint "Extracting mailscanner files:"
-        tar -xzf "$MailScannerTmpDir/MailScanner.deb.tar.gz" -C "$MailScannerTmpDir/"
+        wget "$MailScannerDownloadPath"
+        logprint "Installing package:"
+        if [[ "$PM" == "yum"* ]]; then
+            rpm -ivh MailScanner-$MailScannerVersion.rhel.noarch.rpm
+        elif [[ "$PM" == "apt-get"* ]]; then
+            dpkg -i MailScanner-$MailScannerVersionn.noarch.deb
+        fi
         logprint "Starting MailScanner install script"
 
-        "$MailScannerTmpDir/MailScanner-$MailScannerVersion/install.sh" "--MTA=$MTA"  "--installClamav=$useClamav" "--installCPAN=$useCpan" "--ignoreDeps=$ignoreDeps" "--ramdiskSize=$ramdiskSize"
+        "/usr/sbin/ms-configure" "--MTA=$MTA"  "--installClamav=$useClamav" "--installCPAN=$useCpan" "--ignoreDeps=$ignoreDeps" "--ramdiskSize=$ramdiskSize"
         if [[ "$?" != "0" ]]; then
             echo "Some error occured while installing MailScanner."
             exit 1
