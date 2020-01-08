@@ -6,8 +6,16 @@ Webuser="$1"
 service postfix stop
 
 cp "$DIR/etc/MailScanner/conf.d/00_mailwatch.conf" /etc/MailScanner/conf.d/00_mailwatch.conf
-cp "$DIR/etc/postfix/header_checks" /etc/postfix/header_checks
-echo "header_checks = regexp:/etc/postfix/header_checks" >> /etc/postfix/main.cf
+
+# only add header_checks file if it doesn't exist
+if [ ! -f /etc/postfix/header_checks ]; then
+    cp "$DIR/etc/postfix/header_checks" /etc/postfix/header_checks
+fi
+
+# only add header_checks if not already enabled
+if [[ -z $(grep -e '^\s*header_checks' /etc/postfix/main.cf) ]]; then
+    echo "header_checks = regexp:/etc/postfix/header_checks" >> /etc/postfix/main.cf
+]
 
 # "Setting file permissions for use of postfix"
 mkdir -p /var/spool/MailScanner/spamassassin/
