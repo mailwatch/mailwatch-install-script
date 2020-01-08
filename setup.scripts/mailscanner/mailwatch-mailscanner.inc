@@ -70,11 +70,10 @@ function install-mailscanner() {
     logprint ""
     if [[ "$PM" == "yum"* ]]; then
         MailScannerPkg="MailScanner-$MailScannerVersion.rhel.noarch.rpm"
-        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/$MailScannerPkg"
     elif [[ "$PM" == "apt-get"* ]]; then
         MailScannerPkg="MailScanner-$MailScannerVersion.noarch.deb"
-        MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/master/builds/$MailScannerPkg"
     fi
+    MailScannerDownloadPath="https://github.com/MailScanner/v5/blob/$MailScannerVersion/builds/$MailScannerPkg"
 
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
     if [ -z "$installMailScanner" ] || [ "$installMailScanner" == "y" ]; then
