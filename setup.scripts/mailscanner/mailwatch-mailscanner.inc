@@ -71,7 +71,7 @@ function install-mailscanner() {
     if [[ "$PM" == "yum"* ]]; then
         MailScannerPkg="MailScanner-$MailScannerVersion.rhel.noarch.rpm"
     elif [[ "$PM" == "apt-get"* ]]; then
-        MailScannerPkg="MailScanner-$MailScannerVersion-noarch.deb"
+        MailScannerPkg="MailScanner-$MailScannerVersion.noarch.deb"
     fi
     MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/$MailScannerVersion/builds/$MailScannerPkg"
 
