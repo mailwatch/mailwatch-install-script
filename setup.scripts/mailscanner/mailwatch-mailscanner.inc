@@ -73,8 +73,8 @@ function install-mailscanner() {
     elif [[ "$PM" == "apt-get"* ]]; then
         MailScannerPkg="MailScanner-$MailScannerVersion.noarch.deb"
     fi
-    MailScannerDownloadPath="https://github.com/MailScanner/v5/raw/$MailScannerVersion/builds/$MailScannerPkg"
-
+    MailScannerDownloadPath="https://github.com/MailScanner/v5/releases/download/$MailScannerVersion/$MailScannerPkg"
+	
     ask "Install/upgrade MailScanner version $MailScannerVersion?:(y/n)[y]: " installMailScanner
     if [ -z "$installMailScanner" ] || [ "$installMailScanner" == "y" ]; then
         logprint "Starting MailScanner install"
