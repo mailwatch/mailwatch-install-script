@@ -15,7 +15,7 @@ fi
 # only add header_checks if not already enabled
 if [[ -z $(grep -e '^\s*header_checks' /etc/postfix/main.cf) ]]; then
     echo "header_checks = regexp:/etc/postfix/header_checks" >> /etc/postfix/main.cf
-]
+fi
 
 # "Setting file permissions for use of postfix"
 mkdir -p /var/spool/MailScanner/spamassassin/
