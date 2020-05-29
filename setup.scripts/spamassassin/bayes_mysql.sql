@@ -53,3 +53,5 @@ ALTER TABLE `bayes_vars`
 
 ALTER TABLE `bayes_vars`
 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+
+INSERT INTO bayes_global_vars VALUES ('VERSION','3');
