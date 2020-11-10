@@ -64,7 +64,7 @@ function prepare-mailscanner() {
 
 function install-mailscanner() {
     install-fixlatin
-    install-digestsha1
+    install-digestsha
     install-dbdmysql
 
     logprint ""
@@ -128,13 +128,13 @@ function install-fixlatin() {
     fi
 }
 
-function install-digestsha1() {
-    perl -MDigest::SHA1 -e 1 &> /dev/null
+function install-digestsha() {
+    perl -MDigest::SHA -e 1 &> /dev/null
     if [ "$?" == "0" ]; then
-        echo "Digest::SHA1 already installed"
+        echo "Digest::SHA already installed"
     else
-        echo "Digest::SHA1 not installed. Installing it now."
-        cpan -i Digest::SHA1
+        echo "Digest::SHA not installed. Installing it now."
+        cpan -i Digest::SHA
     fi
 }
 
