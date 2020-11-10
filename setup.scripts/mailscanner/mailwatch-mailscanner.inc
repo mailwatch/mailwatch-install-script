@@ -149,7 +149,7 @@ function install-dbdmysql() {
         elif [[ "$PM" == "yum"* ]]; then
              $PM install perl-DBD-MySQL
         else
-            cpan -i Digest::SHA1
+            cpan -i DBD::MySQL
         fi
     fi
 }
